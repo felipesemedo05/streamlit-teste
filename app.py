@@ -3,7 +3,7 @@ import pandas as pd
 import os
 from datetime import datetime
 from io import BytesIO
-#import openpyxl
+import openpyxl
 
 # Função para aplicar as transformações
 def processar_arquivo(df, claro):
@@ -75,8 +75,8 @@ if uploaded_file is not None:
         if 'start_date' in df.columns and 'end_date' in df.columns:
             df['start_date'] = pd.to_datetime(df['start_date'], errors='coerce')
             df['end_date'] = pd.to_datetime(df['end_date'], errors='coerce')
-            start_date = df['start_date'].dropna().iloc[0]
-            end_date = df['end_date'].dropna().iloc[0]
+            start_date = df['start_date'].dropna().iloc(0)
+            end_date = df['end_date'].dropna().iloc(0)
             dias = (end_date - start_date).days + 1  # Adiciona 1 ao cálculo dos dias
             periodo_info = f"Período do arquivo: {start_date.strftime('%Y-%m-%d')} até {end_date.strftime('%Y-%m-%d')} ({dias} dias)"
         else:
@@ -103,9 +103,9 @@ if uploaded_file is not None:
         output_csv.seek(0)
 
         # Criar o Excel
-        # with pd.ExcelWriter(output_excel, engine='openpyxl') as writer:
-        #     final.to_excel(writer, index=False, sheet_name='Dados Processados')
-        # output_excel.seek(0)
+        with pd.ExcelWriter(output_excel, engine='openpyxl') as writer:
+            final.to_excel(writer, index=False, sheet_name='Dados Processados')
+        output_excel.seek(0)
 
         # Layout de colunas
         col1, col2 = st.columns([2, 3])
@@ -138,12 +138,12 @@ if uploaded_file is not None:
                 mime='text/csv',
             )
 
-            # st.download_button(
-            #     label="💾 Baixar Arquivo Processado (Excel)",
-            #     data=output_excel,
-            #     file_name=processed_filename_xlsx,
-            #     mime='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-            # )
+            st.download_button(
+                label="💾 Baixar Arquivo Processado (Excel)",
+                data=output_excel,
+                file_name=processed_filename_xlsx,
+                mime='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            )
 
     except Exception as e:
         st.error(f"Ocorreu um erro ao processar os arquivos: {e}")
