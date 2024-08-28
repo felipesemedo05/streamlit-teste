@@ -150,5 +150,12 @@ if uploaded_file is not None:
                 mime='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
             )
 
+
+    # Mapa com Streamlit
+st.map(data=pd.DataFrame({
+    'lat': [37.76, 37.77],
+    'lon': [-122.4, -122.41]
+}))
+
     except Exception as e:
         st.error(f"Ocorreu um erro ao processar os arquivos: {e}")
