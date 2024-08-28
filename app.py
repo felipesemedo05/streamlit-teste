@@ -3,6 +3,7 @@ import pandas as pd
 import os
 from datetime import datetime
 from io import BytesIO
+import openpyxl
 
 # Função para aplicar as transformações
 def processar_arquivo(df, claro):
@@ -41,7 +42,7 @@ def processar_arquivo(df, claro):
 # Interface do Streamlit
 st.set_page_config(page_title='Processamento de Arquivo', layout='wide')
 
-st.title('oi Processamento de Arquivo CSV e Parquet')
+st.title('Processamento de Arquivo CSV e Parquet')
 
 # Upload do arquivo CSV ou Parquet
 uploaded_file = st.file_uploader("Escolha um arquivo CSV ou Parquet para o dataset principal", type=["csv", "parquet"])
