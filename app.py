@@ -3,7 +3,6 @@ import pandas as pd
 import os
 from datetime import datetime
 from io import BytesIO
-import openpyxl
 
 # Função para aplicar as transformações
 def processar_arquivo(df, claro):
