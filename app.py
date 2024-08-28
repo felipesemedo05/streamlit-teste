@@ -3,7 +3,7 @@ import pandas as pd
 import os
 from datetime import datetime
 from io import BytesIO
-import openpyxl
+#import openpyxl
 
 # Função para aplicar as transformações
 def processar_arquivo(df, claro):
@@ -103,9 +103,9 @@ if uploaded_file is not None:
         output_csv.seek(0)
 
         # Criar o Excel
-        with pd.ExcelWriter(output_excel, engine='openpyxl') as writer:
-            final.to_excel(writer, index=False, sheet_name='Dados Processados')
-        output_excel.seek(0)
+        # with pd.ExcelWriter(output_excel, engine='openpyxl') as writer:
+        #     final.to_excel(writer, index=False, sheet_name='Dados Processados')
+        # output_excel.seek(0)
 
         # Layout de colunas
         col1, col2 = st.columns([2, 3])
@@ -138,12 +138,12 @@ if uploaded_file is not None:
                 mime='text/csv',
             )
 
-            st.download_button(
-                label="💾 Baixar Arquivo Processado (Excel)",
-                data=output_excel,
-                file_name=processed_filename_xlsx,
-                mime='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-            )
+            # st.download_button(
+            #     label="💾 Baixar Arquivo Processado (Excel)",
+            #     data=output_excel,
+            #     file_name=processed_filename_xlsx,
+            #     mime='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            # )
 
     except Exception as e:
         st.error(f"Ocorreu um erro ao processar os arquivos: {e}")
