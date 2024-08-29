@@ -151,48 +151,64 @@ if uploaded_file is not None:
                 mime='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
             )
 
-        # Adicionando o Mapa Interativo com Cores Baseadas em 'uniques'
-        if 'latitude' in final.columns and 'longitude' in final.columns and 'uniques' in final.columns:
-            st.header("Mapa Interativo com Localizações")
-            
-            # Normalizar a coluna 'uniques' para o intervalo [0, 1]
-            max_uniques = final['uniques'].max()
-            min_uniques = final['uniques'].min()
-            final['scaled_uniques'] = final['uniques'].apply(lambda x: (x - min_uniques) / (max_uniques - min_uniques))
+        # Adicionando Opções de Configuração do Mapa
+        if 'latitude' in final.columns and 'longitude' in final.columns:
+            st.header("Configurações do Mapa")
 
-            # Função para converter o valor de 'scaled_uniques' em uma cor RGB
-            def color_scale(value):
-                # Definindo uma escala de cores do amarelo ao roxo
-                # value varia de 0 (amarelo) a 1 (roxo)
-                r = int(255 * (1 - value))  # Reduzindo o vermelho conforme o valor aumenta
-                g = int(255 * (1 - value))  # Reduzindo o verde conforme o valor aumenta
-                b = int(255 * value)  # Aumentando o azul conforme o valor aumenta
-                return [r, g, b]
+            # Selecionar a coluna para a cor
+            colunas_numericas = final.select_dtypes(include=['float64', 'int64']).columns.tolist()
+            coluna_para_cor = st.selectbox("Escolha a coluna para basear a cor dos pontos", colunas_numericas, index=colunas_numericas.index('uniques'))
 
-            # Aplicando a função de cores
-            final['color'] = final['scaled_uniques'].apply(color_scale)
-
-            # Configurando o Layer do Mapa
-            layer = pdk.Layer(
-                'ScatterplotLayer',
-                data=final,
-                get_position='[longitude, latitude]',
-                get_color='color',
-                get_radius=200,
-                pickable=True,
-                auto_highlight=True
+            # Selecionar a paleta de cores
+            paleta_de_cores = st.selectbox(
+                "Escolha a paleta de cores",
+                options=["amarelo ao roxo", "azul ao vermelho", "verde ao roxo"]
             )
 
-            # Configurando a Visualização
+            # Definir a função de cores com base na escolha do usuário
+            def color_scale(value, palette):
+                if palette == "amarelo ao roxo":
+                    r = int(255 * (1 - value))
+                    g = int(255 * (1 - value))
+                    b = int(255 * value)
+                elif palette == "azul ao vermelho":
+                    r = int(255 * value)
+                    g = int(0)
+                    b = int(255 * (1 - value))
+                elif palette == "verde ao roxo":
+                    r = int(128 * value)
+                    g = int(255 * (1 - value))
+                    b = int(128 * value)
+                return [r, g, b]
+
+            # Normalizar a coluna escolhida para o intervalo [0, 1]
+            max_value = final[coluna_para_cor].max()
+            min_value = final[coluna_para_cor].min()
+            final['color_scale'] = final[coluna_para_cor].apply(lambda x: (x - min_value) / (max_value - min_value))
+
+            # Criar o mapa interativo com pydeck
             view_state = pdk.ViewState(
                 latitude=final['latitude'].mean(),
                 longitude=final['longitude'].mean(),
                 zoom=10,
-                pitch=0,  # Mantendo o mapa plano
+                pitch=0
             )
 
-            # Criando o mapa com pydeck
-            st.pydeck_chart(pdk.Deck(layers=[layer], initial_view_state=view_state))
+            # Configurar a camada de pontos
+            layer = pdk.Layer(
+                'ScatterplotLayer',
+                data=final,
+                get_position='[longitude, latitude]',
+                get_fill_color=[color_scale(row['color_scale'], paleta_de_cores) for _, row in final.iterrows()],
+                get_radius=200,
+                pickable=True,
+                auto_highlight=True,
+                tooltip=True,
+            )
+
+            # Renderizar o mapa
+            deck_chart = pdk.Deck(layers=[layer], initial_view_state=view_state, tooltip={"text": "{location_id}\nImpressions: {impressions}\nUniques: {uniques}"})
+            st.pydeck_chart(deck_chart)
 
     except Exception as e:
-        st.error(f"Ocorreu um erro ao processar o arquivo: {e}")
+        st.error(f"Ocorreu um erro ao processar os arquivos: {e}")
