@@ -56,8 +56,8 @@ def processar_arquivo(df, claro, com_data):
     # Ajustar a coluna 'date' conforme a opção com_data
     if com_data:
         if 'date' not in df.columns:
-            raise ValueError("A coluna 'date' não está presente no dataframe")
-        final = final[~final['date'].isnull()]
+            raise ValueError("A coluna 'date' não está presente no dataframe original")
+        final = final[~final['date'].isnull()]  # Remove linhas onde 'date' é nulo
     else:
         if 'date' in final.columns:
             final = final.drop(columns=['date'])
