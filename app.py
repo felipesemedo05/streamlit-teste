@@ -4,8 +4,6 @@ import os
 from datetime import datetime
 from io import BytesIO
 import openpyxl
-import pydeck as pdk
-import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 
@@ -54,6 +52,14 @@ st.title('Processamento de Arquivo CSV e Parquet')
 aba_selecionada = st.sidebar.radio("Escolha uma aba", ["Processamento de Arquivo", "Dashboard"])
 
 if aba_selecionada == "Processamento de Arquivo":
+    # Verifica se há dados processados e armazenados em st.session_state
+    if 'final' in st.session_state:
+        st.session_state['final'] = st.session_state['final']  # Mantém os dados se a aba for reaberta
+        st.session_state['output_csv'] = st.session_state['output_csv']
+        st.session_state['output_excel'] = st.session_state['output_excel']
+        st.session_state['processed_filename_csv'] = st.session_state['processed_filename_csv']
+        st.session_state['processed_filename_xlsx'] = st.session_state['processed_filename_xlsx']
+
     # Upload do arquivo CSV ou Parquet
     uploaded_file = st.file_uploader("Escolha um arquivo CSV ou Parquet para o dataset principal", type=["csv", "parquet"])
 
@@ -177,7 +183,7 @@ elif aba_selecionada == "Dashboard":
         # Gráfico 1: Distribuição de 'impressions'
         st.subheader("Distribuição de 'Impressions'")
         plt.figure(figsize=(10, 6))
-        sns.histplot(final['impressions'], kde=True, bins=30)
+        sns.histplot(final['impressions'], bins=30, kde=True)
         plt.xlabel('Impressions')
         plt.ylabel('Frequência')
         plt.title('Distribuição de Impressions')
@@ -191,7 +197,7 @@ elif aba_selecionada == "Dashboard":
         plt.ylabel('Frequência')
         plt.title('Frequência vs. Unique Impressions')
         st.pyplot()
-        
+
         # Botões de download dos arquivos processados
         if 'output_csv' in st.session_state and 'output_excel' in st.session_state:
             st.download_button(
