@@ -4,8 +4,6 @@ import os
 from datetime import datetime
 from io import BytesIO
 import openpyxl
-import folium
-from streamlit_folium import folium_static
 import pydeck as pdk
 
 # Função para aplicar as transformações
@@ -157,36 +155,18 @@ if uploaded_file is not None:
         if 'latitude' in final.columns and 'longitude' in final.columns and 'uniques' in final.columns:
             st.header("Mapa Interativo com Localizações")
             
-            # Normalizar a coluna 'uniques' para o intervalo [0, 255]
+            # Normalizar a coluna 'uniques' para o intervalo [0, 1]
             max_uniques = final['uniques'].max()
             min_uniques = final['uniques'].min()
-            final['color'] = final['uniques'].apply(lambda x: int(255 * (x - min_uniques) / (max_uniques - min_uniques)))
+            final['scaled_uniques'] = final['uniques'].apply(lambda x: (x - min_uniques) / (max_uniques - min_uniques))
 
-            # Configurando o Layer do Mapa
-            layer = pdk.Layer(
-                'ScatterplotLayer',
-                data=final,
-                get_position='[longitude, latitude]',
-                get_color='[255, 140, 0, color]',
-                get_radius=200,
-                pickable=True,
-                auto_highlight=True
-            )
+            # Função para converter o valor de 'scaled_uniques' em uma cor RGB
+            def color_scale(value):
+                # Definindo uma escala de cores do amarelo ao roxo
+                # value varia de 0 (amarelo) a 1 (roxo)
+                r = int(255 * (1 - value))  # Reduzindo o vermelho conforme o valor aumenta
+                g = int(255 * (1 - value))  # Reduzindo o verde conforme o valor aumenta
+                b = int(255 * value)  # Aumentando o azul conforme o valor aumenta
+                return [r, g, b]
 
-            # Configurando a Visualização
-            view_state = pdk.ViewState(
-                latitude=final['latitude'].mean(),
-                longitude=final['longitude'].mean(),
-                zoom=10,
-                pitch=50,
-            )
-
-            # Criando o mapa com pydeck
-            st.pydeck_chart(pdk.Deck(
-                layers=[layer],
-                initial_view_state=view_state,
-                tooltip={"text": "Location ID: {location_id}\nUniques: {uniques}\nImpressions: {impressions}"}
-            ))
-
-    except Exception as e:
-        st.error(f"Ocorreu um erro ao processar os arquivos: {e}")
+          
