@@ -169,5 +169,30 @@ if uploaded_file is not None:
                 b = int(255 * value)  # Aumentando o azul conforme o valor aumenta
                 return [r, g, b]
 
-          except Exception as e:
-    st.error(f"Ocorreu um erro ao processar os arquivos: {e}")
+            # Aplicando a função de cores
+            final['color'] = final['scaled_uniques'].apply(color_scale)
+
+            # Configurando o Layer do Mapa
+            layer = pdk.Layer(
+                'ScatterplotLayer',
+                data=final,
+                get_position='[longitude, latitude]',
+                get_color='color',
+                get_radius=200,
+                pickable=True,
+                auto_highlight=True
+            )
+
+            # Configurando a Visualização
+            view_state = pdk.ViewState(
+                latitude=final['latitude'].mean(),
+                longitude=final['longitude'].mean(),
+                zoom=10,
+                pitch=0,  # Mantendo o mapa plano
+            )
+
+            # Criando o mapa com pydeck
+            st.pydeck_chart(pdk.Deck(layers=[layer], initial_view_state=view_state))
+
+    except Exception as e:
+        st.error(f"Ocorreu um erro ao processar o arquivo: {e}")
