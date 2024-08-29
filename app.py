@@ -153,23 +153,23 @@ if uploaded_file is not None:
                 mime='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
             )
 
-        # # Adicionando o Mapa com Folium
-        # if 'latitude' in final.columns and 'longitude' in final.columns:
-        #     st.header("Mapa com Localizações")
-        #     # Cria um mapa base
-        #     mapa = folium.Map(location=[final['latitude'].mean(), final['longitude'].mean()], zoom_start=10)
+        # Adicionando o Mapa com Folium
+        if 'latitude' in final.columns and 'longitude' in final.columns:
+            st.header("Mapa com Localizações")
+            # Cria um mapa base
+            mapa = folium.Map(location=[final['latitude'].mean(), final['longitude'].mean()], zoom_start=10)
             
-        #     # Adiciona os pontos ao mapa
-        #     for idx, row in final.iterrows():
-        #         folium.Marker(
-        #             location=[row['latitude'], row['longitude']],
-        #             popup=f"ID: {row['location_id']}",
-        #         ).add_to(mapa)
+            # Adiciona os pontos ao mapa
+            for idx, row in final.iterrows():
+                folium.Marker(
+                    location=[row['latitude'], row['longitude']],
+                    popup=f"ID: {row['location_id']}",
+                ).add_to(mapa)
             
-        #     # Exibe o mapa
-        #     folium_static(mapa)
+            # Exibe o mapa
+            folium_static(mapa)
 
-        st.map(data=final[['latitude', 'longitude']])
+        #st.map(data=final[['latitude', 'longitude']])
     
     except Exception as e:
         st.error(f"Ocorreu um erro ao processar os arquivos: {e}")
