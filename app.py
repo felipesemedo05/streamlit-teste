@@ -35,6 +35,7 @@ def processar_arquivo(df, claro):
     claro = claro[['location_id', 'latitude', 'longitude']]
     
     df1['location_id'] = df1['location_id'].astype(str)
+    df1['frequencia'] = df1['impressions']/df1['uniques']
     
     final = df1.merge(claro, on='location_id')
     final['location_id'] = final['location_id'].str.extract('([0-9]+)', expand=False)
