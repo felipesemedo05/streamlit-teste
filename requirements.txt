@@ -5,3 +5,4 @@ pydeck
 keplergl
 matplotlib
 seaborn
+plotly
