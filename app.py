@@ -115,71 +115,72 @@ if aba_selecionada == "Processamento de Arquivo":
 
             # Se a opção for incluir dados com datas, adicione a coluna `date` e filtre para não nulo
             if com_data and 'date' in df.columns:
-                final = final[~df['date'].isnull()]
                 final['date'] = df['date']
+                final = final[~final['date'].isnull()]
 
             # Salvar os dados processados no session_state
             st.session_state['final'] = final
 
-            # Contagem de location_id únicos
-            unique_location_ids = final['location_id'].nunique()
+            if st.session_state['final'] is not None:
+                # Layout de colunas
+                col1, col2 = st.columns([2, 3])
 
-            # Criar buffers para arquivos
-            output_csv = BytesIO()
-            output_excel = BytesIO()
+                # Seção de Estatísticas Descritivas
+                with col1:
+                    st.header("Estatísticas Descritivas")
+                    st.write(periodo_info)
+                    st.write(f"Quantidade de location_id: {st.session_state['final']['location_id'].nunique()}")
 
-            # Definir o nome do arquivo processado CSV
-            processed_filename_csv = f"{original_filename}_processado_{datetime.now().strftime('%Y-%m-%d')}.csv"
+                    if 'impressions' in df.columns:            
+                        st.subheader("Estatísticas de 'impressions'")
+                        impressions_describe = round(st.session_state['final']['impressions'].describe(), 2).to_dict()
+                        st.write(impressions_describe)
 
-            # Definir o nome do arquivo processado EXCEL
-            processed_filename_xlsx = f"{original_filename}_processado_{datetime.now().strftime('%Y-%m-%d')}.xlsx"
+                    if 'uniques' in df.columns:
+                        st.subheader("Estatísticas de 'uniques'")
+                        uniques_describe = round(st.session_state['final']['uniques'].describe(), 2).to_dict()
+                        st.write(uniques_describe)
 
-            # Criar o CSV
-            final.to_csv(output_csv, index=False)
-            output_csv.seek(0)
+                # Seção de Dados Processados e Downloads
+                with col2:
+                    st.header("Dados Processados")
+                    st.dataframe(st.session_state['final'].head())
 
-            # Criar o Excel
-            with pd.ExcelWriter(output_excel, engine='openpyxl') as writer:
-                final.to_excel(writer, index=False, sheet_name='Dados Processados')
-            output_excel.seek(0)
+                    # Criar buffers para arquivos
+                    output_csv = BytesIO()
+                    output_excel = BytesIO()
 
-            # Layout de colunas
-            col1, col2 = st.columns([2, 3])
+                    # Definir o nome do arquivo processado CSV
+                    processed_filename_csv = f"{original_filename}_processado_{datetime.now().strftime('%Y-%m-%d')}.csv"
 
-            # Seção de Estatísticas Descritivas
-            with col1:
-                st.header("Estatísticas Descritivas")
-                st.write(periodo_info)
-                st.write(f"Quantidade de location_id: {unique_location_ids}")
+                    # Definir o nome do arquivo processado EXCEL
+                    processed_filename_xlsx = f"{original_filename}_processado_{datetime.now().strftime('%Y-%m-%d')}.xlsx"
 
-                if 'impressions' in df.columns:            
-                    st.subheader("Estatísticas de 'impressions'")
-                    impressions_describe = round(final['impressions'].describe(), 2).to_dict()
-                    st.write(impressions_describe)
+                    # Criar o CSV
+                    st.session_state['final'].to_csv(output_csv, index=False)
+                    output_csv.seek(0)
 
-                if 'uniques' in df.columns:
-                    st.subheader("Estatísticas de 'uniques'")
-                    uniques_describe = round(final['uniques'].describe(), 2).to_dict()
-                    st.write(uniques_describe)
+                    # Criar o Excel
+                    with pd.ExcelWriter(output_excel, engine='openpyxl') as writer:
+                        st.session_state['final'].to_excel(writer, index=False, sheet_name='Dados Processados')
+                    output_excel.seek(0)
 
-            # Seção de Dados Processados e Downloads
-            with col2:
-                st.header("Dados Processados")
-                st.dataframe(final.head())
+                    st.download_button(
+                        label="💾 Baixar Arquivo Processado (CSV)",
+                        data=output_csv,
+                        file_name=processed_filename_csv,
+                        mime='text/csv',
+                    )
 
-                st.download_button(
-                    label="💾 Baixar Arquivo Processado (CSV)",
-                    data=output_csv,
-                    file_name=processed_filename_csv,
-                    mime='text/csv',
-                )
+                    st.download_button(
+                        label="💾 Baixar Arquivo Processado (Excel)",
+                        data=output_excel,
+                        file_name=processed_filename_xlsx,
+                        mime='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                    )
+            else:
+                st.warning("Nenhum dado processado encontrado. Por favor, carregue e processe um arquivo primeiro.")
 
-                st.download_button(
-                    label="💾 Baixar Arquivo Processado (Excel)",
-                    data=output_excel,
-                    file_name=processed_filename_xlsx,
-                    mime='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-                )
         except Exception as e:
             st.error(f"Ocorreu um erro ao processar o arquivo: {e}")
 
