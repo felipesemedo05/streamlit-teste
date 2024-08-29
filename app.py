@@ -113,6 +113,10 @@ if aba_selecionada == "Processamento de Arquivo":
             # Processamento do arquivo
             final = processar_arquivo(df, claro, com_data)
 
+            # Se a opção for incluir dados com datas, adicione a coluna `date`
+            if com_data and 'date' in df.columns:
+                final['date'] = df['date']
+
             # Salvar os dados processados no session_state
             st.session_state['final'] = final
 
@@ -183,7 +187,6 @@ elif aba_selecionada == "Dashboard":
         final = st.session_state['final']
         st.header("Dashboard de Análise de Dados")
         
-        # Remover gráficos como solicitado
         st.write("Os gráficos foram removidos. Adicione aqui qualquer outra informação ou análise desejada.")
         
     else:
