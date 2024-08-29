@@ -169,4 +169,5 @@ if uploaded_file is not None:
                 b = int(255 * value)  # Aumentando o azul conforme o valor aumenta
                 return [r, g, b]
 
-          
+          except Exception as e:
+    st.error(f"Ocorreu um erro ao processar os arquivos: {e}")
