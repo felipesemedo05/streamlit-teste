@@ -2,3 +2,4 @@ openpyxl
 folium
 streamlit_folium
 pydeck
+keplergl
