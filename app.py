@@ -151,21 +151,34 @@ if uploaded_file is not None:
                 mime='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
             )
 
-        # Seção de Mapa Interativo
-        st.header("Mapa Interativo 2D com Escala de Cor (Uniques)")
+       # Seção de Mapa Interativo
+        st.header("Mapa Interativo 2D com Escala de Cor")
         
-        # Definir uma escala de cor para os valores de 'uniques'
-        min_uniques = final['uniques'].min()
-        max_uniques = final['uniques'].max()
+        # Opção de selecionar a coluna para a escala de cor
+        coluna_selecionada = st.selectbox(
+            "Selecione a coluna para definir a escala de cor do mapa:",
+            options=['impressions', 'uniques']
+        )
         
-        # Função para normalizar os valores de 'uniques' para a escala de cor
+        # Opção de selecionar a paleta de cores
+        paletas_disponiveis = plt.colormaps()
+        paleta_selecionada = st.selectbox(
+            "Selecione a paleta de cores:",
+            options=paletas_disponiveis
+        )
+        
+        # Definir uma escala de cor para os valores da coluna selecionada
+        min_val = final[coluna_selecionada].min()
+        max_val = final[coluna_selecionada].max()
+        
+        # Função para normalizar os valores da coluna selecionada para a escala de cor
         def color_scale(value):
-            # Normaliza os valores para a escala de 0-255
-            scale = int(255 * (value - min_uniques) / (max_uniques - min_uniques))
-            return [255 - scale, scale, 150]  # Exemplo: verde para alto, vermelho para baixo
+            norm_value = (value - min_val) / (max_val - min_val)
+            rgba_color = plt.get_cmap(paleta_selecionada)(norm_value)
+            return [int(255 * c) for c in rgba_color[:3]]  # Converte para valores RGB
         
         # Adiciona uma coluna de cores ao dataframe
-        final['color'] = final['uniques'].apply(color_scale)
+        final['color'] = final[coluna_selecionada].apply(color_scale)
         
         # Mapa de Pontos com escala de cor
         layer = pdk.Layer(
@@ -198,10 +211,9 @@ if uploaded_file is not None:
         st.markdown(f"""
         **Legenda:**
         
-        <span style="background-color: rgb(255, 0, 150); display: inline-block; width: 20px; height: 20px;"></span> &nbsp; Baixo (`uniques` próximos a {min_uniques}) <br>
-        <span style="background-color: rgb(0, 255, 150); display: inline-block; width: 20px; height: 20px;"></span> &nbsp; Alto (`uniques` próximos a {max_uniques})
+        <span style="background-color: {plt.get_cmap(paleta_selecionada)(0)}; display: inline-block; width: 20px; height: 20px;"></span> &nbsp; Baixo (`{coluna_selecionada}` próximos a {min_val}) <br>
+        <span style="background-color: {plt.get_cmap(paleta_selecionada)(1)}; display: inline-block; width: 20px; height: 20px;"></span> &nbsp; Alto (`{coluna_selecionada}` próximos a {max_val})
         """, unsafe_allow_html=True)
-
 
     except Exception as e:
         st.error(f"Ocorreu um erro ao processar o arquivo: {e}")
