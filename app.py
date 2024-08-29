@@ -29,6 +29,11 @@ def processar_arquivo(df, claro, com_data):
             df1 = df[((df['social_class'].isnull()) & (~df['location_id'].isnull()) & (df['gender'].isnull()) &
                       (df['nationality'].isnull()) & (df['date'].isnull()) & (df['age'].isnull()) &
                       (df['impression_hour'].isnull()) & (df['num_total_impressions'].isnull()) & (df['residence_name'].isnull()))]
+    
+    # Ajustar a exibição da coluna 'date' baseado na opção com_data
+    if not com_data and 'date' in df1.columns:
+        df1 = df1.drop(columns=['date'])
+    
     df1 = df1.sort_values('impressions', ascending=False)
     df1 = df1[[coluna for coluna in df.columns if coluna in colunas_para_manter]].reset_index(drop=True)
     claro = claro.rename(columns={'id': 'location_id'})
@@ -87,16 +92,6 @@ if aba_selecionada == "Processamento de Arquivo":
             com_data = st.radio("Você deseja incluir dados com datas?", ("Sim", "Não")) == "Sim"
             # Processamento do arquivo
             final = processar_arquivo(df, claro, com_data)
-            # Ajustar a exibição do DataFrame baseado na opção com_data
-            if com_data:
-                # Se a opção for incluir dados com datas, verifique se a coluna 'date' está presente
-                if 'date' not in final.columns:
-                    st.error("A coluna 'date' não está presente nos dados processados.")
-                    st.stop()
-            else:
-                # Se a opção for não incluir dados com datas, remova a coluna 'date' se existir
-                if 'date' in final.columns:
-                    final = final.drop(columns=['date'])
             
             # Salvar os dados processados no session_state
             st.session_state['final'] = final
