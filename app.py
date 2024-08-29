@@ -14,7 +14,11 @@ def processar_arquivo(df, claro, com_data):
     
     if all(coluna in df.columns for coluna in colunas_esperadas):
         if com_data:
-            df1 = df[((df['class'].isnull()) & (~df.location_id.isnull()) & (df.gender_group.isnull()) & (df.country.isnull()) & ~(df.date.isnull()) & (df.age_group.isnull()) & (df.impression_hour.isnull()) & (df.num_total_impressions.isnull()) & (df.home.isnull()))]
+            df1 = df[((df['class'].isnull()) & (~df['location_id'].isnull()) & 
+                      (df['gender_group'].isnull()) & (df['country'].isnull()) & 
+                      (~df['date'].isnull()) & (df['age_group'].isnull()) & 
+                      (df['impression_hour'].isnull()) & (df['num_total_impressions'].isnull()) & 
+                      (df['home'].isnull()))]
         else:
             df1 = df[((df['class'].isnull()) & (~df['location_id'].isnull()) & 
                       (df['gender_group'].isnull()) & (df['country'].isnull()) & 
@@ -26,7 +30,7 @@ def processar_arquivo(df, claro, com_data):
         if com_data:
             df1 = df[((df['social_class'].isnull()) & (~df['location_id'].isnull()) & 
                       (df['gender'].isnull()) & (df['nationality'].isnull()) & 
-                      ~(df['date'].isnull()) & (df['age'].isnull()) & 
+                      (~df['date'].isnull()) & (df['age'].isnull()) & 
                       (df['impression_hour'].isnull()) & (df['num_total_impressions'].isnull()) & 
                       (df['residence_name'].isnull()))]
         else:
@@ -111,8 +115,10 @@ if aba_selecionada == "Processamento de Arquivo":
 
             # Se a opção for incluir dados com datas, adicione a coluna `date` e filtre para não nulo
             if com_data and 'date' in df.columns:
-                final['date'] = df['date']
                 final = final[~final['date'].isnull()]
+            elif not com_data and 'date' in df.columns:
+                final['date'] = df['date']
+                final = final[final['date'].isnull()]
 
             # Salvar os dados processados no session_state
             st.session_state['final'] = final
