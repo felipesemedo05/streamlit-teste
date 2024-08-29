@@ -51,7 +51,14 @@ def processar_arquivo(df, claro, com_data):
     
     final = df1.merge(claro, on='location_id')
     final['location_id'] = final['location_id'].str.extract('([0-9]+)', expand=False)
-    final['frequencia'] = final['impressions']/final['uniques']
+    final['frequencia'] = final['impressions'] / final['uniques']
+    
+    # Filtragem adicional com base na opção com_data
+    if com_data:
+        final = final[~final['date'].isnull()]
+    else:
+        final['date'] = df['date']
+        final = final[final['date'].isnull()]
 
     return final
 
@@ -112,13 +119,6 @@ if aba_selecionada == "Processamento de Arquivo":
 
             # Processamento do arquivo
             final = processar_arquivo(df, claro, com_data)
-
-            # Se a opção for incluir dados com datas, adicione a coluna `date` e filtre para não nulo
-            if com_data and 'date' in df.columns:
-                final = final[~final['date'].isnull()]
-            elif not com_data and 'date' in df.columns:
-                final['date'] = df['date']
-                final = final[final['date'].isnull()]
 
             # Salvar os dados processados no session_state
             st.session_state['final'] = final
