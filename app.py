@@ -152,20 +152,27 @@ if uploaded_file is not None:
             )
 
         # Seção de Mapa Interativo
-        st.header("Mapa Interativo 2D com Escala de Cor")
+        st.header("Mapa Interativo 2D com Escala de Cor (Uniques)")
         
-        # Selecionar coluna para escala
-        coluna_selecionada = st.selectbox(
-            "Selecione a coluna para definir a escala de cor do mapa:",
-            options=['impressions', 'uniques']
-        )
+        # Definir uma escala de cor para os valores de 'uniques'
+        min_uniques = final['uniques'].min()
+        max_uniques = final['uniques'].max()
+        
+        # Função para normalizar os valores de 'uniques' para a escala de cor
+        def color_scale(value):
+            # Normaliza os valores para a escala de 0-255
+            scale = int(255 * (value - min_uniques) / (max_uniques - min_uniques))
+            return [255 - scale, scale, 150]  # Exemplo: verde para alto, vermelho para baixo
+        
+        # Adiciona uma coluna de cores ao dataframe
+        final['color'] = final['uniques'].apply(color_scale)
         
         # Mapa de Pontos com escala de cor
         layer = pdk.Layer(
             'ScatterplotLayer',
             data=final,
             get_position='[longitude, latitude]',
-            get_color=f'[{coluna_selecionada}, 100, 255-{coluna_selecionada}, 200]',
+            get_color='color',
             get_radius=200,
             pickable=True,
         )
@@ -187,8 +194,13 @@ if uploaded_file is not None:
         
         st.pydeck_chart(r)
         
-        # Exibir legenda (apenas uma imagem para simplificação)
-        st.image("https://via.placeholder.com/150x50.png?text=Legenda", caption="Legenda: Escala de Cor")
+        # Legenda simulada
+        st.markdown(f"""
+        **Legenda:**
+        
+        <span style="background-color: rgb(255, 0, 150); display: inline-block; width: 20px; height: 20px;"></span> &nbsp; Baixo (`uniques` próximos a {min_uniques}) <br>
+        <span style="background-color: rgb(0, 255, 150); display: inline-block; width: 20px; height: 20px;"></span> &nbsp; Alto (`uniques` próximos a {max_uniques})
+        """, unsafe_allow_html=True)
 
 
     except Exception as e:
