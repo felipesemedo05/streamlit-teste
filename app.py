@@ -53,12 +53,14 @@ def processar_arquivo(df, claro, com_data):
     final['location_id'] = final['location_id'].str.extract('([0-9]+)', expand=False)
     final['frequencia'] = final['impressions'] / final['uniques']
     
-    # Filtragem adicional com base na opção com_data
+    # Ajustar a coluna 'date' conforme a opção com_data
     if com_data:
+        if 'date' not in df.columns:
+            raise ValueError("A coluna 'date' não está presente no dataframe")
         final = final[~final['date'].isnull()]
     else:
-        final['date'] = df['date']
-        final = final[final['date'].isnull()]
+        if 'date' in final.columns:
+            final = final.drop(columns=['date'])
 
     return final
 
