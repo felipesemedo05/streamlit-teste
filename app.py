@@ -167,19 +167,23 @@ if uploaded_file is not None:
 
             # Definir a função de cores com base na escolha do usuário
             def color_scale(value, palette):
+                """Converte o valor normalizado em uma cor RGB com base na paleta escolhida."""
                 if palette == "amarelo ao roxo":
+                    # Escala de cores: amarelo para roxo
                     r = int(255 * (1 - value))
                     g = int(255 * (1 - value))
                     b = int(255 * value)
                 elif palette == "azul ao vermelho":
+                    # Escala de cores: azul para vermelho
                     r = int(255 * value)
                     g = int(0)
                     b = int(255 * (1 - value))
                 elif palette == "verde ao roxo":
+                    # Escala de cores: verde para roxo
                     r = int(128 * value)
                     g = int(255 * (1 - value))
                     b = int(128 * value)
-                return [r, g, b]
+                return [r, g, b, 160]  # A última parte é a transparência
 
             # Normalizar a coluna escolhida para o intervalo [0, 1]
             max_value = final[coluna_para_cor].max()
@@ -203,11 +207,13 @@ if uploaded_file is not None:
                 get_radius=200,
                 pickable=True,
                 auto_highlight=True,
-                tooltip=True,
+                tooltip={
+                    "text": "{location_id}\nImpressions: {impressions}\nUniques: {uniques}\n{coluna_para_cor}: {" + coluna_para_cor + "}"
+                }
             )
 
             # Renderizar o mapa
-            deck_chart = pdk.Deck(layers=[layer], initial_view_state=view_state, tooltip={"text": "{location_id}\nImpressions: {impressions}\nUniques: {uniques}"})
+            deck_chart = pdk.Deck(layers=[layer], initial_view_state=view_state)
             st.pydeck_chart(deck_chart)
 
     except Exception as e:
