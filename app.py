@@ -5,6 +5,8 @@ from datetime import datetime
 from io import BytesIO
 import openpyxl
 import pydeck as pdk
+from keplergl import KeplerGl
+import json
 
 # Função para aplicar as transformações
 def processar_arquivo(df, claro):
@@ -39,6 +41,77 @@ def processar_arquivo(df, claro):
     final = df1.merge(claro, on='location_id')
     
     return final
+
+# Função para gerar o mapa KeplerGl
+def gerar_mapa_kepler_gl(df, coluna_cor, paleta_cores):
+    # Definições para a visualização
+    layers = [
+        {
+            "id": "scatterplot",
+            "type": "scatterplot",
+            "config": {
+                "dataId": "data",
+                "label": "Mapa de Localizações",
+                "color": [255, 0, 0],
+                "columns": {
+                    "lat": "latitude",
+                    "lng": "longitude",
+                    "color": coluna_cor
+                },
+                "isVisible": True,
+                "visConfig": {
+                    "radius": 10,
+                    "fixedRadius": False,
+                    "opacity": 0.8,
+                    "outline": False,
+                    "colorRange": {
+                        "name": "Custom",
+                        "type": "custom",
+                        "category": "Custom",
+                        "colors": paleta_cores
+                    },
+                    "colorRange": {
+                        "name": "Custom",
+                        "type": "custom",
+                        "category": "Custom",
+                        "colors": paleta_cores
+                    },
+                    "radiusRange": [0, 50]
+                }
+            }
+        }
+    ]
+    
+    # Definir o mapa
+    mapa_config = {
+        "version": "v1",
+        "config": {
+            "visState": {
+                "layers": layers,
+                "filters": [],
+                "interactionConfig": {
+                    "tooltip": {
+                        "fieldsToShow": {
+                            "data": [
+                                {"name": "location_id", "format": None},
+                                {"name": coluna_cor, "format": None}
+                            ]
+                        },
+                        "enabled": True
+                    }
+                },
+                "mapState": {
+                    "latitude": df['latitude'].mean(),
+                    "longitude": df['longitude'].mean(),
+                    "zoom": 10,
+                    "pitch": 0,
+                    "bearing": 0
+                }
+            }
+        }
+    }
+    
+    return mapa_config
 
 # Interface do Streamlit
 st.set_page_config(page_title='Processamento de Arquivo', layout='wide')
@@ -150,70 +223,23 @@ if uploaded_file is not None:
                 file_name=processed_filename_xlsx,
                 mime='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
             )
+        
+        # Seção de Mapa KeplerGl
+        st.header("Mapa Interativo")
 
-       # Seção de Mapa Interativo
-        st.header("Mapa Interativo 2D com Escala de Cor")
+        # Seleção da coluna para a cor
+        coluna_cor = st.selectbox("Escolha a coluna para colorir", options=[col for col in final.columns if col not in ['location_id', 'latitude', 'longitude']])
         
-        # Opção de selecionar a coluna para a escala de cor
-        coluna_selecionada = st.selectbox(
-            "Selecione a coluna para definir a escala de cor do mapa:",
-            options=['impressions', 'uniques']
-        )
-        
-        # Opção de selecionar a paleta de cores
-        paletas_disponiveis = plt.colormaps()
-        paleta_selecionada = st.selectbox(
-            "Selecione a paleta de cores:",
-            options=paletas_disponiveis
-        )
-        
-        # Definir uma escala de cor para os valores da coluna selecionada
-        min_val = final[coluna_selecionada].min()
-        max_val = final[coluna_selecionada].max()
-        
-        # Função para normalizar os valores da coluna selecionada para a escala de cor
-        def color_scale(value):
-            norm_value = (value - min_val) / (max_val - min_val)
-            rgba_color = plt.get_cmap(paleta_selecionada)(norm_value)
-            return [int(255 * c) for c in rgba_color[:3]]  # Converte para valores RGB
-        
-        # Adiciona uma coluna de cores ao dataframe
-        final['color'] = final[coluna_selecionada].apply(color_scale)
-        
-        # Mapa de Pontos com escala de cor
-        layer = pdk.Layer(
-            'ScatterplotLayer',
-            data=final,
-            get_position='[longitude, latitude]',
-            get_color='color',
-            get_radius=200,
-            pickable=True,
-        )
-        
-        # Configuração inicial do mapa
-        view_state = pdk.ViewState(
-            latitude=final['latitude'].mean(),
-            longitude=final['longitude'].mean(),
-            zoom=10,
-            pitch=0,  # 2D
-        )
-        
-        # Renderização do mapa
-        r = pdk.Deck(
-            layers=[layer],
-            initial_view_state=view_state,
-            tooltip={"text": "{location_id}\nImpressions: {impressions}\nUniques: {uniques}"},
-        )
-        
-        st.pydeck_chart(r)
-        
-        # Legenda simulada
-        st.markdown(f"""
-        **Legenda:**
-        
-        <span style="background-color: {plt.get_cmap(paleta_selecionada)(0)}; display: inline-block; width: 20px; height: 20px;"></span> &nbsp; Baixo (`{coluna_selecionada}` próximos a {min_val}) <br>
-        <span style="background-color: {plt.get_cmap(paleta_selecionada)(1)}; display: inline-block; width: 20px; height: 20px;"></span> &nbsp; Alto (`{coluna_selecionada}` próximos a {max_val})
-        """, unsafe_allow_html=True)
+        # Seleção da paleta de cores
+        paleta_cores = st.color_picker("Escolha a cor inicial da paleta", "#FFFFFF")
+
+        # Converte a cor selecionada em uma lista de cores para a paleta
+        paleta_cores = [paleta_cores, "#FF0000"]  # Você pode adicionar mais cores à paleta conforme necessário
+
+        # Gerar e exibir o mapa
+        mapa_config = gerar_mapa_kepler_gl(final, coluna_cor, paleta_cores)
+        m = KeplerGl(height=600, config=mapa_config)
+        st.write(m)
 
     except Exception as e:
         st.error(f"Ocorreu um erro ao processar o arquivo: {e}")
