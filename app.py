@@ -239,7 +239,7 @@ if uploaded_file is not None:
 
         # Gerar e exibir o mapa
         mapa_config = gerar_mapa_kepler_gl(final, coluna_cor, paleta_cores)
-        m = KeplerGl(height=600, config=mapa_config)
+        m = KeplerGl(height=600, config=json.dumps(mapa_config))
         st.write(m)
 
     except Exception as e:
