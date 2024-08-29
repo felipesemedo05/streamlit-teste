@@ -89,9 +89,10 @@ if aba_selecionada == "Processamento de Arquivo":
             final = processar_arquivo(df, claro, com_data)
             # Ajustar a exibição do DataFrame baseado na opção com_data
             if com_data:
-                # Se a opção for incluir dados com datas, filtre para 'date' não nulo
-                if 'date' in final.columns:
-                    final = final[~final['date'].isnull()]
+                # Se a opção for incluir dados com datas, verifique se a coluna 'date' está presente
+                if 'date' not in final.columns:
+                    st.error("A coluna 'date' não está presente nos dados processados.")
+                    st.stop()
             else:
                 # Se a opção for não incluir dados com datas, remova a coluna 'date' se existir
                 if 'date' in final.columns:
