@@ -4,22 +4,30 @@ import os
 from datetime import datetime
 from io import BytesIO
 import openpyxl
-
+# Função para aplicar as transformações
 def processar_arquivo(df, claro, com_data):
-    colunas_para_manter = ['location_id', 'impressions', 'uniques']  # Colunas que serão mantidas no resultado final
+    colunas_para_manter = ['location_id', 'impressions', 'uniques']
     # Verifica se as colunas padrão existem
     colunas_esperadas = ['class', 'location_id', 'gender_group', 'country', 'date', 'age_group', 'impression_hour', 'num_total_impressions', 'home']
     if all(coluna in df.columns for coluna in colunas_esperadas):
         if com_data:
-            df1 = df[((df['class'].isnull()) & (~df['location_id'].isnull()) & (df['gender_group'].isnull()) & (df['country'].isnull()) & (~df['date'].isnull()) & (df['age_group'].isnull()) & (df['impression_hour'].isnull()) & (df['num_total_impressions'].isnull()) & (df['home'].isnull()))]
+            df1 = df[((df['class'].isnull()) & (~df['location_id'].isnull()) & (df['gender_group'].isnull()) &
+                      (df['country'].isnull()) & (~df['date'].isnull()) & (df['age_group'].isnull()) &
+                      (df['impression_hour'].isnull()) & (df['num_total_impressions'].isnull()) & (df['home'].isnull()))]
         else:
-            df1 = df[((df['class'].isnull()) & (~df['location_id'].isnull()) & (df['gender_group'].isnull()) & (df['country'].isnull()) & (df['date'].isnull()) & (df['age_group'].isnull()) & (df['impression_hour'].isnull()) & (df['num_total_impressions'].isnull()) & (df['home'].isnull()))]
+            df1 = df[((df['class'].isnull()) & (~df['location_id'].isnull()) & (df['gender_group'].isnull()) &
+                      (df['country'].isnull()) & (df['date'].isnull()) & (df['age_group'].isnull()) &
+                      (df['impression_hour'].isnull()) & (df['num_total_impressions'].isnull()) & (df['home'].isnull()))]
     else:
         # Executa o código alternativo com nomes de colunas diferentes
         if com_data:
-            df1 = df[((df['social_class'].isnull()) & (~df['location_id'].isnull()) & (df['gender'].isnull()) & (df['nationality'].isnull()) & (~df['date'].isnull()) & (df['age'].isnull()) & (df['impression_hour'].isnull()) & (df['num_total_impressions'].isnull()) & (df['residence_name'].isnull()))]
+            df1 = df[((df['social_class'].isnull()) & (~df['location_id'].isnull()) & (df['gender'].isnull()) &
+                      (df['nationality'].isnull()) & (~df['date'].isnull()) & (df['age'].isnull()) &
+                      (df['impression_hour'].isnull()) & (df['num_total_impressions'].isnull()) & (df['residence_name'].isnull()))]
         else:
-            df1 = df[((df['social_class'].isnull()) & (~df['location_id'].isnull()) & (df['gender'].isnull()) & (df['nationality'].isnull()) & (df['date'].isnull()) & (df['age'].isnull()) & (df['impression_hour'].isnull()) & (df['num_total_impressions'].isnull()) & (df['residence_name'].isnull()))]
+            df1 = df[((df['social_class'].isnull()) & (~df['location_id'].isnull()) & (df['gender'].isnull()) &
+                      (df['nationality'].isnull()) & (df['date'].isnull()) & (df['age'].isnull()) &
+                      (df['impression_hour'].isnull()) & (df['num_total_impressions'].isnull()) & (df['residence_name'].isnull()))]
     df1 = df1.sort_values('impressions', ascending=False)
     df1 = df1[[coluna for coluna in df.columns if coluna in colunas_para_manter]].reset_index(drop=True)
     claro = claro.rename(columns={'id': 'location_id'})
@@ -43,7 +51,7 @@ if aba_selecionada == "Processamento de Arquivo":
             # Obter o nome do arquivo enviado
             original_filename = os.path.splitext(uploaded_file.name)[0]  # Pega o nome sem a extensão
             # Leitura do arquivo claro diretamente do computador
-            claro_path = 'claro.csv'  # Atualize com o caminho do seu arquivo
+            claro_path = 'claro.csv'  # Atualize com o caminho do seu arquivo claro
             claro = pd.read_csv(claro_path, encoding='latin-1')
             # Leitura do arquivo CSV ou Parquet do dataset principal
             if uploaded_file.name.endswith('.csv'):
@@ -77,11 +85,13 @@ if aba_selecionada == "Processamento de Arquivo":
             com_data = st.radio("Você deseja incluir dados com datas?", ("Sim", "Não")) == "Sim"
             # Processamento do arquivo
             final = processar_arquivo(df, claro, com_data)
-            # Se a opção for incluir dados com datas, adicione a coluna date e filtre para não nulo
+            # Se a opção for incluir dados com datas, filtre para date não nulo
             if com_data:
-                final = final[~final['date'].isnull()]
+                if 'date' in final.columns:
+                    final = final[~final['date'].isnull()]
             else:
-                final = final[final['date'].isnull()]
+                if 'date' in final.columns:
+                    final = final[final['date'].isnull()]
             # Salvar os dados processados no session_state
             st.session_state['final'] = final
             if st.session_state['final'] is not None:
@@ -117,7 +127,7 @@ if aba_selecionada == "Processamento de Arquivo":
                     # Criar o Excel
                     with pd.ExcelWriter(output_excel, engine='openpyxl') as writer:
                         st.session_state['final'].to_excel(writer, index=False, sheet_name='Dados Processados')
-                    output_excel.seek(0)
+                        output_excel.seek(0)
                     st.download_button(
                         label=":disquete: Baixar Arquivo Processado (CSV)",
                         data=output_csv,
