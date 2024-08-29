@@ -16,7 +16,7 @@ def processar_arquivo(df, claro, com_data):
         if com_data:
             df1 = df[((df['class'].isnull()) & (~df['location_id'].isnull()) & 
                       (df['gender_group'].isnull()) & (df['country'].isnull()) & 
-                      (~df['date'].isnull()) & (df['age_group'].isnull()) & 
+                      ~(df['date'].isnull()) & (df['age_group'].isnull()) & 
                       (df['impression_hour'].isnull()) & (df['num_total_impressions'].isnull()) & 
                       (df['home'].isnull()))]
         else:
@@ -30,7 +30,7 @@ def processar_arquivo(df, claro, com_data):
         if com_data:
             df1 = df[((df['social_class'].isnull()) & (~df['location_id'].isnull()) & 
                       (df['gender'].isnull()) & (df['nationality'].isnull()) & 
-                      (~df['date'].isnull()) & (df['age'].isnull()) & 
+                      ~(df['date'].isnull()) & (df['age'].isnull()) & 
                       (df['impression_hour'].isnull()) & (df['num_total_impressions'].isnull()) & 
                       (df['residence_name'].isnull()))]
         else:
