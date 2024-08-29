@@ -4,9 +4,7 @@ import os
 from datetime import datetime
 from io import BytesIO
 import openpyxl
-import pydeck as pdk
 from keplergl import KeplerGl
-import json
 
 # Função para aplicar as transformações
 def processar_arquivo(df, claro):
@@ -35,6 +33,7 @@ def processar_arquivo(df, claro):
     claro = claro.rename(columns={'id': 'location_id'})
     claro = claro[['location_id', 'latitude', 'longitude']]
     
+    # Garantir que location_id é tratado como string
     df1['location_id'] = df1['location_id'].astype(str)
     df1['location_id'] = df1['location_id'].str.extract('([0-9]+)', expand=False)
     
@@ -44,50 +43,41 @@ def processar_arquivo(df, claro):
 
 # Função para gerar o mapa KeplerGl
 def gerar_mapa_kepler_gl(df, coluna_cor, paleta_cores):
-    # Definições para a visualização
-    layers = [
-        {
-            "id": "scatterplot",
-            "type": "scatterplot",
-            "config": {
-                "dataId": "data",
-                "label": "Mapa de Localizações",
-                "color": [255, 0, 0],
-                "columns": {
-                    "lat": "latitude",
-                    "lng": "longitude",
-                    "color": coluna_cor
-                },
-                "isVisible": True,
-                "visConfig": {
-                    "radius": 10,
-                    "fixedRadius": False,
-                    "opacity": 0.8,
-                    "outline": False,
-                    "colorRange": {
-                        "name": "Custom",
-                        "type": "custom",
-                        "category": "Custom",
-                        "colors": paleta_cores
-                    },
-                    "colorRange": {
-                        "name": "Custom",
-                        "type": "custom",
-                        "category": "Custom",
-                        "colors": paleta_cores
-                    },
-                    "radiusRange": [0, 50]
-                }
-            }
-        }
-    ]
-    
-    # Definir o mapa
+    # Configuração do mapa
     mapa_config = {
         "version": "v1",
         "config": {
             "visState": {
-                "layers": layers,
+                "layers": [
+                    {
+                        "id": "scatterplot",
+                        "type": "scatterplot",
+                        "config": {
+                            "dataId": "data",
+                            "label": "Mapa de Localizações",
+                            "color": [255, 0, 0],
+                            "columns": {
+                                "lat": "latitude",
+                                "lng": "longitude",
+                                "color": coluna_cor
+                            },
+                            "isVisible": True,
+                            "visConfig": {
+                                "radius": 10,
+                                "fixedRadius": False,
+                                "opacity": 0.8,
+                                "outline": False,
+                                "colorRange": {
+                                    "name": "Custom",
+                                    "type": "custom",
+                                    "category": "Custom",
+                                    "colors": paleta_cores
+                                },
+                                "radiusRange": [0, 50]
+                            }
+                        }
+                    }
+                ],
                 "filters": [],
                 "interactionConfig": {
                     "tooltip": {
@@ -233,13 +223,10 @@ if uploaded_file is not None:
         # Seleção da paleta de cores
         paleta_cores = st.color_picker("Escolha a cor inicial da paleta", "#FFFFFF")
 
-        # Converte a cor selecionada em uma lista de cores para a paleta
-        paleta_cores = [paleta_cores, "#FF0000"]  # Você pode adicionar mais cores à paleta conforme necessário
+        # Adiciona mais cores à paleta conforme necessário
+        paleta_cores = [paleta_cores, "#FF0000"]
 
         # Gerar e exibir o mapa
         mapa_config = gerar_mapa_kepler_gl(final, coluna_cor, paleta_cores)
         m = KeplerGl(height=600, config=mapa_config)
         st.write(m)
-
-    except Exception as e:
-        st.error(f"Ocorreu um erro ao processar o arquivo: {e}")
