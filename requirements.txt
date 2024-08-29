@@ -3,3 +3,5 @@ folium
 streamlit_folium
 pydeck
 keplergl
+matplotlib
+seaborn
