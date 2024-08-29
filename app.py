@@ -106,7 +106,7 @@ def gerar_mapa_kepler_gl(df, coluna_cor, paleta_cores):
 # Interface do Streamlit
 st.set_page_config(page_title='Processamento de Arquivo', layout='wide')
 
-st.title('oi Processamento de Arquivo CSV e Parquet')
+st.title('Processamento de Arquivo CSV e Parquet')
 
 # Upload do arquivo CSV ou Parquet
 uploaded_file = st.file_uploader("Escolha um arquivo CSV ou Parquet para o dataset principal", type=["csv", "parquet"])
@@ -221,14 +221,16 @@ if uploaded_file is not None:
         coluna_cor = st.selectbox("Escolha a coluna para colorir", options=[col for col in final.columns if col not in ['location_id', 'latitude', 'longitude']])
         
         # Seleção da paleta de cores
-        paleta_cores = st.color_picker("Escolha a cor inicial da paleta", "#FFFFFF")
+        cor_inicial = st.color_picker("Escolha a cor inicial da paleta", "#FFFFFF")
+        cor_final = st.color_picker("Escolha a cor final da paleta", "#FF0000")
 
-        # Adiciona mais cores à paleta conforme necessário
-        paleta_cores = [paleta_cores, "#FF0000"]
+        # Adiciona cores à paleta conforme necessário
+        paleta_cores = [cor_inicial, cor_final]
 
         # Gerar e exibir o mapa
         mapa_config = gerar_mapa_kepler_gl(final, coluna_cor, paleta_cores)
         m = KeplerGl(height=600, config=mapa_config)
         st.write(m)
+
     except Exception as e:
             st.error(f"Ocorreu um erro ao processar o arquivo: {e}")
