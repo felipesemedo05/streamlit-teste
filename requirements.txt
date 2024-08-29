@@ -6,3 +6,4 @@ keplergl
 matplotlib
 seaborn
 plotly
+statsmodels
