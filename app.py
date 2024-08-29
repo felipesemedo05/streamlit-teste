@@ -1,46 +1,38 @@
 import streamlit as st
 import pandas as pd
-import os
-from datetime import datetime
-from io import BytesIO
-import openpyxl
-import pydeck as pdk
+import folium
+from streamlit_folium import st_folium
 import numpy as np
 
-# Função para aplicar as transformações
-def processar_arquivo(df, claro):
-    colunas_para_manter = ['location_id', 'impressions', 'uniques']
+# Função para criar o mapa com Folium
+def criar_mapa_folium(df, coluna_cor, cor_inicial, cor_final):
+    # Cria um mapa centrado na média dos dados
+    m = folium.Map(location=[df['latitude'].mean(), df['longitude'].mean()], zoom_start=10)
 
-    # Verifica se as colunas padrão existem
-    colunas_esperadas = ['class', 'location_id', 'gender_group', 'country', 'date', 'age_group', 'impression_hour', 'num_total_impressions', 'home']
+    # Normaliza os valores da coluna de cor para o intervalo [0, 1]
+    valores = df[coluna_cor].fillna(0).astype(float)
+    min_val, max_val = valores.min(), valores.max()
+    df['normalized_color'] = (valores - min_val) / (max_val - min_val)
     
-    if all(coluna in df.columns for coluna in colunas_esperadas):
-        df1 = df[((df['class'].isnull()) & (~df['location_id'].isnull()) & 
-                  (df['gender_group'].isnull()) & (df['country'].isnull()) & 
-                  (df['date'].isnull()) & (df['age_group'].isnull()) & 
-                  (df['impression_hour'].isnull()) & (df['num_total_impressions'].isnull()) & 
-                  (df['home'].isnull()))]
-    else:
-        # Executa o código alternativo com nomes de colunas diferentes
-        df1 = df[((df['social_class'].isnull()) & (~df['location_id'].isnull()) & 
-                  (df['gender'].isnull()) & (df['nationality'].isnull()) & 
-                  (df['date'].isnull()) & (df['age'].isnull()) & 
-                  (df['impression_hour'].isnull()) & (df['num_total_impressions'].isnull()) & 
-                  (df['residence_name'].isnull()))]
+    # Define a paleta de cores
+    cor_inicial_rgb = [int(cor_inicial[i:i+2], 16) for i in (1, 3, 5)]
+    cor_final_rgb = [int(cor_final[i:i+2], 16) for i in (1, 3, 5)]
+    
+    for _, row in df.iterrows():
+        cor_normalizada = [int(cor_inicial_rgb[i] + (cor_final_rgb[i] - cor_inicial_rgb[i]) * row['normalized_color']) for i in range(3)]
+        cor_hex = '#{:02x}{:02x}{:02x}'.format(*cor_normalizada)
+        
+        folium.CircleMarker(
+            location=[row['latitude'], row['longitude']],
+            radius=5,
+            color=cor_hex,
+            fill=True,
+            fill_color=cor_hex,
+            fill_opacity=0.8,
+            popup=f"ID: {row['location_id']}<br>{coluna_cor}: {row[coluna_cor]}"
+        ).add_to(m)
 
-    df1 = df1.sort_values('impressions', ascending=False)
-    df1 = df1[[coluna for coluna in df.columns if coluna in colunas_para_manter]].reset_index(drop=True)
-    
-    claro = claro.rename(columns={'id': 'location_id'})
-    claro = claro[['location_id', 'latitude', 'longitude']]
-    
-    # Garantir que location_id é tratado como string
-    df1['location_id'] = df1['location_id'].astype(str)
-    df1['location_id'] = df1['location_id'].str.extract('([0-9]+)', expand=False)
-    
-    final = df1.merge(claro, on='location_id')
-    
-    return final
+    return m
 
 # Interface do Streamlit
 st.set_page_config(page_title='Processamento de Arquivo', layout='wide')
@@ -52,14 +44,11 @@ uploaded_file = st.file_uploader("Escolha um arquivo CSV ou Parquet para o datas
 
 if uploaded_file is not None:
     try:
-        # Obter o nome do arquivo enviado
         original_filename = os.path.splitext(uploaded_file.name)[0]  # Pega o nome sem a extensão
 
-        # Leitura do arquivo claro diretamente do computador
         claro_path = 'claro.csv'  # Atualize com o caminho do seu arquivo
         claro = pd.read_csv(claro_path, encoding='latin-1')
 
-        # Leitura do arquivo CSV ou Parquet do dataset principal
         if uploaded_file.name.endswith('.csv'):
             try:
                 df = pd.read_csv(uploaded_file, encoding='latin-1')
@@ -74,51 +63,39 @@ if uploaded_file is not None:
                 st.error(f"Erro ao ler o arquivo Parquet: {e}")
                 st.stop()
 
-        # Exibindo o período das datas, se as colunas existirem
         if 'start_date' in df.columns and 'end_date' in df.columns:
             df['start_date'] = pd.to_datetime(df['start_date'], errors='coerce')
             df['end_date'] = pd.to_datetime(df['end_date'], errors='coerce')
             
-            # Verifica se existem valores não nulos
             if not df['start_date'].dropna().empty and not df['end_date'].dropna().empty:
                 start_date = df['start_date'].dropna().iloc[0]
                 end_date = df['end_date'].dropna().iloc[0]
-                dias = (end_date - start_date).days + 1  # Adiciona 1 ao cálculo dos dias
+                dias = (end_date - start_date).days + 1
                 periodo_info = f"Período do arquivo: {start_date.strftime('%Y-%m-%d')} até {end_date.strftime('%Y-%m-%d')} ({dias} dias)"
             else:
                 periodo_info = "Não há datas válidas no arquivo."
         else:
             periodo_info = "Colunas 'start_date' e/ou 'end_date' não encontradas no arquivo."
 
-        # Processamento do arquivo
         final = processar_arquivo(df, claro)
 
-        # Contagem de location_id únicos
         unique_location_ids = final['location_id'].nunique()
 
-        # Criar buffers para arquivos
         output_csv = BytesIO()
         output_excel = BytesIO()
 
-        # Definir o nome do arquivo processado CSV
         processed_filename_csv = f"{original_filename}_processado_{datetime.now().strftime('%Y-%m-%d')}.csv"
-
-        # Definir o nome do arquivo processado EXCEL
         processed_filename_xlsx = f"{original_filename}_processado_{datetime.now().strftime('%Y-%m-%d')}.xlsx"
 
-        # Criar o CSV
         final.to_csv(output_csv, index=False)
         output_csv.seek(0)
 
-        # Criar o Excel
         with pd.ExcelWriter(output_excel, engine='openpyxl') as writer:
             final.to_excel(writer, index=False, sheet_name='Dados Processados')
         output_excel.seek(0)
 
-        # Layout de colunas
         col1, col2 = st.columns([2, 3])
 
-        # Seção de Estatísticas Descritivas
         with col1:
             st.header("Estatísticas Descritivas")
             st.write(periodo_info)
@@ -134,7 +111,6 @@ if uploaded_file is not None:
                 uniques_describe = round(final['uniques'].describe(), 2).to_dict()
                 st.write(uniques_describe)
 
-        # Seção de Dados Processados e Downloads
         with col2:
             st.header("Dados Processados")
             st.dataframe(final.head())
@@ -152,52 +128,17 @@ if uploaded_file is not None:
                 file_name=processed_filename_xlsx,
                 mime='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
             )
-        
-        # Seção de Mapa com pydeck
+
         st.header("Mapa Interativo")
 
-        # Seleção da coluna para a cor
         coluna_cor = st.selectbox("Escolha a coluna para colorir", options=[col for col in final.columns if col not in ['location_id', 'latitude', 'longitude']])
         
-        # Seleção da paleta de cores
         cor_inicial = st.color_picker("Escolha a cor inicial da paleta", "#FFFFFF")
         cor_final = st.color_picker("Escolha a cor final da paleta", "#FF0000")
 
-        # Criar a paleta de cores para o pydeck
-        paleta_cores = [cor_inicial, cor_final]
-        color_range = [list(int(c[1:][i:i+2], 16) for i in (0, 2, 4)) for c in paleta_cores]
-        
-        # Normalizar os valores da coluna de cor para o intervalo [0, 1]
-        valores = final[coluna_cor].fillna(0).astype(float)
-        min_val, max_val = valores.min(), valores.max()
-        final['normalized_color'] = (valores - min_val) / (max_val - min_val)
-        
-        # Map
-        mapa = pdk.Deck(
-            initial_view_state=pdk.ViewState(
-                latitude=final['latitude'].mean(),
-                longitude=final['longitude'].mean(),
-                zoom=10,
-                pitch=0
-            ),
-            layers=[
-                pdk.Layer(
-                    "ScatterplotLayer",
-                    data=final,
-                    get_position=["longitude", "latitude"],
-                    get_color=[lambda x: [int(c[0] * 255) for c in color_range]],
-                    get_radius=100,
-                    pickable=True,
-                    opacity=0.8
-                )
-            ],
-            map_style='mapbox://styles/mapbox/light-v9',
-            tooltip={"text": "{location_id}\n{coluna_cor}"}
-        )
-        
-        st.pydeck_chart(mapa)
+        mapa = criar_mapa_folium(final, coluna_cor, cor_inicial, cor_final)
+        st_folium(mapa, width=700, height=500)
 
-        # Legenda
         st.write(f"Legenda da cor baseada em: {coluna_cor}")
         st.write(f"Cor inicial: {cor_inicial}, Cor final: {cor_final}")
 
