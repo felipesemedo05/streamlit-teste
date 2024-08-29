@@ -4,6 +4,8 @@ import os
 from datetime import datetime
 from io import BytesIO
 import openpyxl
+import pydeck as pdk
+import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 
@@ -52,14 +54,6 @@ st.title('Processamento de Arquivo CSV e Parquet')
 aba_selecionada = st.sidebar.radio("Escolha uma aba", ["Processamento de Arquivo", "Dashboard"])
 
 if aba_selecionada == "Processamento de Arquivo":
-    # Verifica se há dados processados e armazenados em st.session_state
-    if 'final' in st.session_state:
-        st.session_state['final'] = st.session_state['final']  # Mantém os dados se a aba for reaberta
-        st.session_state['output_csv'] = st.session_state['output_csv']
-        st.session_state['output_excel'] = st.session_state['output_excel']
-        st.session_state['processed_filename_csv'] = st.session_state['processed_filename_csv']
-        st.session_state['processed_filename_xlsx'] = st.session_state['processed_filename_xlsx']
-
     # Upload do arquivo CSV ou Parquet
     uploaded_file = st.file_uploader("Escolha um arquivo CSV ou Parquet para o dataset principal", type=["csv", "parquet"])
 
@@ -106,8 +100,13 @@ if aba_selecionada == "Processamento de Arquivo":
             # Processamento do arquivo
             final = processar_arquivo(df, claro)
 
-            # Armazenar os dados e arquivos processados no session_state
+            # Salvar os dados processados no session_state
             st.session_state['final'] = final
+
+            # Contagem de location_id únicos
+            unique_location_ids = final['location_id'].nunique()
+
+            # Criar buffers para arquivos
             output_csv = BytesIO()
             output_excel = BytesIO()
 
@@ -125,15 +124,6 @@ if aba_selecionada == "Processamento de Arquivo":
             with pd.ExcelWriter(output_excel, engine='openpyxl') as writer:
                 final.to_excel(writer, index=False, sheet_name='Dados Processados')
             output_excel.seek(0)
-
-            # Armazenar os arquivos no session_state
-            st.session_state['output_csv'] = output_csv
-            st.session_state['output_excel'] = output_excel
-            st.session_state['processed_filename_csv'] = processed_filename_csv
-            st.session_state['processed_filename_xlsx'] = processed_filename_xlsx
-
-            # Contagem de location_id únicos
-            unique_location_ids = final['location_id'].nunique()
 
             # Layout de colunas
             col1, col2 = st.columns([2, 3])
@@ -183,7 +173,7 @@ elif aba_selecionada == "Dashboard":
         # Gráfico 1: Distribuição de 'impressions'
         st.subheader("Distribuição de 'Impressions'")
         plt.figure(figsize=(10, 6))
-        sns.histplot(final['impressions'], bins=30, kde=True)
+        sns.histplot(final['impressions'], kde=True, bins=30)
         plt.xlabel('Impressions')
         plt.ylabel('Frequência')
         plt.title('Distribuição de Impressions')
@@ -197,21 +187,6 @@ elif aba_selecionada == "Dashboard":
         plt.ylabel('Frequência')
         plt.title('Frequência vs. Unique Impressions')
         st.pyplot()
-
-        # Botões de download dos arquivos processados
-        if 'output_csv' in st.session_state and 'output_excel' in st.session_state:
-            st.download_button(
-                label="💾 Baixar Arquivo Processado (CSV)",
-                data=st.session_state['output_csv'],
-                file_name=st.session_state['processed_filename_csv'],
-                mime='text/csv',
-            )
-
-            st.download_button(
-                label="💾 Baixar Arquivo Processado (Excel)",
-                data=st.session_state['output_excel'],
-                file_name=st.session_state['processed_filename_xlsx'],
-                mime='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-            )
+        
     else:
         st.warning("Nenhum dado processado encontrado. Por favor, carregue e processe um arquivo primeiro.")
