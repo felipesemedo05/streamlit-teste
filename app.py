@@ -38,6 +38,19 @@ def processar_arquivo(df, claro, com_data):
     final['location_id'] = final['location_id'].str.extract('([0-9]+)', expand=False)
     final['frequencia'] = final['impressions'] / final['uniques']
     return final
+
+# Ajustar a coluna 'date' conforme a opção com_data
+    if com_data:
+        if 'date' in df.columns:
+            final = final[~final['date'].isnull()]  # Remove linhas onde 'date' é nulo
+        else:
+            raise ValueError("A coluna 'date' não está presente no dataframe original")
+    else:
+        if 'date' in final.columns:
+            final = final.drop(columns=['date'])
+
+    return final
+
 # Interface do Streamlit
 st.set_page_config(page_title='Processamento de Arquivo', layout='wide')
 st.title('Processamento de Arquivo CSV e Parquet')
