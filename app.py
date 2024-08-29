@@ -36,13 +36,17 @@ def processar_arquivo(df, claro, com_data):
     
     df1 = df1.sort_values('impressions', ascending=False)
     df1 = df1[[coluna for coluna in df.columns if coluna in colunas_para_manter]].reset_index(drop=True)
+    
     claro = claro.rename(columns={'id': 'location_id'})
     claro = claro[['location_id', 'latitude', 'longitude']]
+    
     # Garantir que location_id é tratado como string
     df1['location_id'] = df1['location_id'].astype(str)
+    
     final = df1.merge(claro, on='location_id')
     final['location_id'] = final['location_id'].str.extract('([0-9]+)', expand=False)
     final['frequencia'] = final['impressions'] / final['uniques']
+    
     return final
 
 # Interface do Streamlit
