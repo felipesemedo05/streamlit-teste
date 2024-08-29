@@ -113,8 +113,9 @@ if aba_selecionada == "Processamento de Arquivo":
             # Processamento do arquivo
             final = processar_arquivo(df, claro, com_data)
 
-            # Se a opção for incluir dados com datas, adicione a coluna `date`
+            # Se a opção for incluir dados com datas, adicione a coluna `date` e filtre para não nulo
             if com_data and 'date' in df.columns:
+                final = final[~df['date'].isnull()]
                 final['date'] = df['date']
 
             # Salvar os dados processados no session_state
