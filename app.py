@@ -4,6 +4,7 @@ import os
 from datetime import datetime
 from io import BytesIO
 import openpyxl
+
 # Função para aplicar as transformações
 def processar_arquivo(df, claro, com_data):
     colunas_para_manter = ['location_id', 'impressions', 'uniques']
@@ -37,18 +38,6 @@ def processar_arquivo(df, claro, com_data):
     final = df1.merge(claro, on='location_id')
     final['location_id'] = final['location_id'].str.extract('([0-9]+)', expand=False)
     final['frequencia'] = final['impressions'] / final['uniques']
-    return final
-
-# Ajustar a coluna 'date' conforme a opção com_data
-    if com_data:
-        if 'date' in df.columns:
-            final = final[~final['date'].isnull()]  # Remove linhas onde 'date' é nulo
-        else:
-            raise ValueError("A coluna 'date' não está presente no dataframe original")
-    else:
-        if 'date' in final.columns:
-            final = final.drop(columns=['date'])
-
     return final
 
 # Interface do Streamlit
@@ -98,13 +87,16 @@ if aba_selecionada == "Processamento de Arquivo":
             com_data = st.radio("Você deseja incluir dados com datas?", ("Sim", "Não")) == "Sim"
             # Processamento do arquivo
             final = processar_arquivo(df, claro, com_data)
-            # Se a opção for incluir dados com datas, filtre para date não nulo
+            # Ajustar a exibição do DataFrame baseado na opção com_data
             if com_data:
+                # Se a opção for incluir dados com datas, filtre para 'date' não nulo
                 if 'date' in final.columns:
                     final = final[~final['date'].isnull()]
             else:
+                # Se a opção for não incluir dados com datas, remova a coluna 'date' se existir
                 if 'date' in final.columns:
-                    final = final[final['date'].isnull()]
+                    final = final.drop(columns=['date'])
+            
             # Salvar os dados processados no session_state
             st.session_state['final'] = final
             if st.session_state['final'] is not None:
