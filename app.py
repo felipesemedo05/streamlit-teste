@@ -36,10 +36,9 @@ def processar_arquivo(df, claro):
     claro = claro[['location_id', 'latitude', 'longitude']]
     
     df1['location_id'] = df1['location_id'].astype(str)
-    df1['frequencia'] = df1['impressions']/df1['uniques']
+    df1['location_id'] = df1['location_id'].str.extract('([0-9]+)', expand=False)
     
     final = df1.merge(claro, on='location_id')
-    final['location_id'] = final['location_id'].str.extract('([0-9]+)', expand=False)
     
     return final
 
@@ -154,53 +153,40 @@ if uploaded_file is not None:
                 mime='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
             )
 
-        # # Adicionando o Mapa com Folium
-        # if 'latitude' in final.columns and 'longitude' in final.columns:
-        #     st.header("Mapa com Localizações")
-        #     # Cria um mapa base
-        #     mapa = folium.Map(location=[final['latitude'].mean(), final['longitude'].mean()], zoom_start=10)
+        # Adicionando o Mapa Interativo com Cores Baseadas em 'uniques'
+        if 'latitude' in final.columns and 'longitude' in final.columns and 'uniques' in final.columns:
+            st.header("Mapa Interativo com Localizações")
             
-        #     # Adiciona os pontos ao mapa
-        #     for idx, row in final.iterrows():
-        #         folium.Marker(
-        #             location=[row['latitude'], row['longitude']],
-        #             popup=f"ID: {row['location_id']}",
-        #         ).add_to(mapa)
-            
-        #     # Exibe o mapa
-        #     folium_static(mapa)
-           # Adicionando o Mapa Interativo com Cores Baseadas em 'uniques'
-            if 'latitude' in final.columns and 'longitude' in final.columns and 'uniques' in final.columns:
-                st.header("Mapa Interativo com Localizações")
-                
-                # Configurando o Layer do Mapa
-                layer = pdk.Layer(
-                    'ScatterplotLayer',
-                    data=final,
-                    get_position='[longitude, latitude]',
-                    get_color='[255, 140, 0, uniques/uniques.max()*255]',
-                    get_radius=200,
-                    pickable=True,
-                    auto_highlight=True
-                )
-    
-                # Configurando a Visualização
-                view_state = pdk.ViewState(
-                    latitude=final['latitude'].mean(),
-                    longitude=final['longitude'].mean(),
-                    zoom=10,
-                    pitch=50,
-                )
-    
-                # Criando o mapa com pydeck
-                st.pydeck_chart(pdk.Deck(
-                    layers=[layer],
-                    initial_view_state=view_state,
-                    tooltip={"text": "Location ID: {location_id}\nUniques: {uniques}\nImpressions: {impressions}"}
-                ))
-    
+            # Normalizar a coluna 'uniques' para o intervalo [0, 255]
+            max_uniques = final['uniques'].max()
+            min_uniques = final['uniques'].min()
+            final['color'] = final['uniques'].apply(lambda x: int(255 * (x - min_uniques) / (max_uniques - min_uniques)))
 
-        #st.map(data=final[['latitude', 'longitude']])
-    
+            # Configurando o Layer do Mapa
+            layer = pdk.Layer(
+                'ScatterplotLayer',
+                data=final,
+                get_position='[longitude, latitude]',
+                get_color='[255, 140, 0, color]',
+                get_radius=200,
+                pickable=True,
+                auto_highlight=True
+            )
+
+            # Configurando a Visualização
+            view_state = pdk.ViewState(
+                latitude=final['latitude'].mean(),
+                longitude=final['longitude'].mean(),
+                zoom=10,
+                pitch=50,
+            )
+
+            # Criando o mapa com pydeck
+            st.pydeck_chart(pdk.Deck(
+                layers=[layer],
+                initial_view_state=view_state,
+                tooltip={"text": "Location ID: {location_id}\nUniques: {uniques}\nImpressions: {impressions}"}
+            ))
+
     except Exception as e:
         st.error(f"Ocorreu um erro ao processar os arquivos: {e}")
