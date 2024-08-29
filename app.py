@@ -14,11 +14,7 @@ def processar_arquivo(df, claro, com_data):
     
     if all(coluna in df.columns for coluna in colunas_esperadas):
         if com_data:
-            df1 = df[((df['class'].isnull()) & (~df['location_id'].isnull()) & 
-                      (df['gender_group'].isnull()) & (df['country'].isnull()) & 
-                      ~(df['date'].isnull()) & (df['age_group'].isnull()) & 
-                      (df['impression_hour'].isnull()) & (df['num_total_impressions'].isnull()) & 
-                      (df['home'].isnull()))]
+            df1 = df[((df['class'].isnull()) & (~df.location_id.isnull()) & (df.gender_group.isnull()) & (df.country.isnull()) & ~(df.date.isnull()) & (df.age_group.isnull()) & (df.impression_hour.isnull()) & (df.num_total_impressions.isnull()) & (df.home.isnull()))]
         else:
             df1 = df[((df['class'].isnull()) & (~df['location_id'].isnull()) & 
                       (df['gender_group'].isnull()) & (df['country'].isnull()) & 
