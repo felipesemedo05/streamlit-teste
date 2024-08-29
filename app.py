@@ -230,3 +230,5 @@ if uploaded_file is not None:
         mapa_config = gerar_mapa_kepler_gl(final, coluna_cor, paleta_cores)
         m = KeplerGl(height=600, config=mapa_config)
         st.write(m)
+    except Exception as e:
+            st.error(f"Ocorreu um erro ao processar o arquivo: {e}")
