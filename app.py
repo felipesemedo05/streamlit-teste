@@ -4,8 +4,8 @@ import os
 from datetime import datetime
 from io import BytesIO
 import openpyxl
-# import folium
-# from streamlit_folium import folium_static
+import folium
+from streamlit_folium import folium_static
 
 # Função para aplicar as transformações
 def processar_arquivo(df, claro):
