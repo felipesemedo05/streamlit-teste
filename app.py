@@ -4,31 +4,41 @@ import os
 from datetime import datetime
 from io import BytesIO
 import openpyxl
-import pydeck as pdk
-import numpy as np
-import plotly.express as px
-import plotly.graph_objects as go
 
 # Função para aplicar as transformações
-def processar_arquivo(df, claro):
+def processar_arquivo(df, claro, com_data):
     colunas_para_manter = ['location_id', 'impressions', 'uniques']
 
     # Verifica se as colunas padrão existem
     colunas_esperadas = ['class', 'location_id', 'gender_group', 'country', 'date', 'age_group', 'impression_hour', 'num_total_impressions', 'home']
     
     if all(coluna in df.columns for coluna in colunas_esperadas):
-        df1 = df[((df['class'].isnull()) & (~df['location_id'].isnull()) & 
-                  (df['gender_group'].isnull()) & (df['country'].isnull()) & 
-                  (df['date'].isnull()) & (df['age_group'].isnull()) & 
-                  (df['impression_hour'].isnull()) & (df['num_total_impressions'].isnull()) & 
-                  (df['home'].isnull()))]
+        if com_data:
+            df1 = df[((df['class'].isnull()) & (~df['location_id'].isnull()) & 
+                      (df['gender_group'].isnull()) & (df['country'].isnull()) & 
+                      (~df['date'].isnull()) & (df['age_group'].isnull()) & 
+                      (df['impression_hour'].isnull()) & (df['num_total_impressions'].isnull()) & 
+                      (df['home'].isnull()))]
+        else:
+            df1 = df[((df['class'].isnull()) & (~df['location_id'].isnull()) & 
+                      (df['gender_group'].isnull()) & (df['country'].isnull()) & 
+                      (df['date'].isnull()) & (df['age_group'].isnull()) & 
+                      (df['impression_hour'].isnull()) & (df['num_total_impressions'].isnull()) & 
+                      (df['home'].isnull()))]
     else:
         # Executa o código alternativo com nomes de colunas diferentes
-        df1 = df[((df['social_class'].isnull()) & (~df['location_id'].isnull()) & 
-                  (df['gender'].isnull()) & (df['nationality'].isnull()) & 
-                  (df['date'].isnull()) & (df['age'].isnull()) & 
-                  (df['impression_hour'].isnull()) & (df['num_total_impressions'].isnull()) & 
-                  (df['residence_name'].isnull()))]
+        if com_data:
+            df1 = df[((df['social_class'].isnull()) & (~df['location_id'].isnull()) & 
+                      (df['gender'].isnull()) & (df['nationality'].isnull()) & 
+                      (~df['date'].isnull()) & (df['age'].isnull()) & 
+                      (df['impression_hour'].isnull()) & (df['num_total_impressions'].isnull()) & 
+                      (df['residence_name'].isnull()))]
+        else:
+            df1 = df[((df['social_class'].isnull()) & (~df['location_id'].isnull()) & 
+                      (df['gender'].isnull()) & (df['nationality'].isnull()) & 
+                      (df['date'].isnull()) & (df['age'].isnull()) & 
+                      (df['impression_hour'].isnull()) & (df['num_total_impressions'].isnull()) & 
+                      (df['residence_name'].isnull()))]
 
     df1 = df1.sort_values('impressions', ascending=False)
     df1 = df1[[coluna for coluna in df.columns if coluna in colunas_para_manter]].reset_index(drop=True)
@@ -97,8 +107,11 @@ if aba_selecionada == "Processamento de Arquivo":
             else:
                 periodo_info = "Colunas 'start_date' e/ou 'end_date' não encontradas no arquivo."
 
+            # Opção para incluir ou não dados com datas
+            com_data = st.radio("Você deseja incluir dados com datas?", ("Sim", "Não")) == "Sim"
+
             # Processamento do arquivo
-            final = processar_arquivo(df, claro)
+            final = processar_arquivo(df, claro, com_data)
 
             # Salvar os dados processados no session_state
             st.session_state['final'] = final
@@ -170,17 +183,8 @@ elif aba_selecionada == "Dashboard":
         final = st.session_state['final']
         st.header("Dashboard de Análise de Dados")
         
-        # Gráfico 1: Distribuição de 'impressions'
-        st.subheader("Distribuição de 'Impressions'")
-        fig = px.histogram(final, x='impressions', nbins=30, title='Distribuição de Impressions')
-        fig.update_layout(xaxis_title='Impressions', yaxis_title='Frequência')
-        st.plotly_chart(fig)
-
-        # Gráfico 2: Frequência vs. Unique Impressions
-        st.subheader("Frequência vs. Unique Impressions")
-        fig = px.scatter(final, x='uniques', y='frequencia', title='Frequência vs. Unique Impressions', trendline='ols')
-        fig.update_layout(xaxis_title='Unique Impressions', yaxis_title='Frequência')
-        st.plotly_chart(fig)
+        # Remover gráficos como solicitado
+        st.write("Os gráficos foram removidos. Adicione aqui qualquer outra informação ou análise desejada.")
         
     else:
         st.warning("Nenhum dado processado encontrado. Por favor, carregue e processe um arquivo primeiro.")
