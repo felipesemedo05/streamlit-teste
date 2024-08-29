@@ -157,12 +157,18 @@ if uploaded_file is not None:
 
             # Selecionar a coluna para a cor
             colunas_numericas = final.select_dtypes(include=['float64', 'int64']).columns.tolist()
-            coluna_para_cor = st.selectbox("Escolha a coluna para basear a cor dos pontos", colunas_numericas, index=colunas_numericas.index('uniques'))
+            coluna_para_cor = st.selectbox(
+                "Escolha a coluna para basear a cor dos pontos", 
+                colunas_numericas, 
+                index=colunas_numericas.index('uniques'),
+                key='coluna_para_cor'
+            )
 
             # Selecionar a paleta de cores
             paleta_de_cores = st.selectbox(
                 "Escolha a paleta de cores",
-                options=["amarelo ao roxo", "azul ao vermelho", "verde ao roxo"]
+                options=["amarelo ao roxo", "azul ao vermelho", "verde ao roxo"],
+                key='paleta_de_cores'
             )
 
             # Definir a função de cores com base na escolha do usuário
@@ -180,14 +186,14 @@ if uploaded_file is not None:
                     b = int(255 * (1 - value))
                 elif palette == "verde ao roxo":
                     # Escala de cores: verde para roxo
-                    r = int(128 * value)
+                    r = int(255 * value)
                     g = int(255 * (1 - value))
-                    b = int(128 * value)
-                return [r, g, b, 160]  # A última parte é a transparência
+                    b = int(255 * (1 - value))
+                return [r, g, b, 200]  # O último valor é a transparência (0-255)
 
-            # Normalizar a coluna escolhida para o intervalo [0, 1]
-            max_value = final[coluna_para_cor].max()
+            # Normalizar a coluna escolhida
             min_value = final[coluna_para_cor].min()
+            max_value = final[coluna_para_cor].max()
             final['color_scale'] = final[coluna_para_cor].apply(lambda x: (x - min_value) / (max_value - min_value))
 
             # Criar o mapa interativo com pydeck
@@ -208,7 +214,7 @@ if uploaded_file is not None:
                 pickable=True,
                 auto_highlight=True,
                 tooltip={
-                    "text": "{location_id}\nImpressions: {impressions}\nUniques: {uniques}\n{coluna_para_cor}: {" + coluna_para_cor + "}"
+                    "text": "{location_id}\nImpressions: {impressions}\nUniques: {uniques}\n" + coluna_para_cor + ": { " + coluna_para_cor + " }"
                 }
             )
 
