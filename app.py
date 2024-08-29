@@ -100,6 +100,9 @@ if aba_selecionada == "Processamento de Arquivo":
             # Processamento do arquivo
             final = processar_arquivo(df, claro)
 
+            # Salvar os dados processados no session_state
+            st.session_state['final'] = final
+
             # Contagem de location_id únicos
             unique_location_ids = final['location_id'].nunique()
 
@@ -163,7 +166,8 @@ if aba_selecionada == "Processamento de Arquivo":
             st.error(f"Ocorreu um erro ao processar o arquivo: {e}")
 
 elif aba_selecionada == "Dashboard":
-    if 'final' in locals():
+    if 'final' in st.session_state:
+        final = st.session_state['final']
         st.header("Dashboard de Análise de Dados")
         
         # Gráfico 1: Distribuição de 'impressions'
