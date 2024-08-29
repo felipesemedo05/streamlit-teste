@@ -41,7 +41,7 @@ def processar_arquivo(df, claro, com_data):
                       (df['residence_name'].isnull()))]
 
     df1 = df1.sort_values('impressions', ascending=False)
-    df1 = df1[[coluna for coluna in df.columns if coluna in colunas_para_manter]].reset_index(drop=True)
+    df1 = df1[[coluna for coluna in colunas_para_manter if coluna in df1.columns]].reset_index(drop=True)
     
     claro = claro.rename(columns={'id': 'location_id'})
     claro = claro[['location_id', 'latitude', 'longitude']]
@@ -55,9 +55,10 @@ def processar_arquivo(df, claro, com_data):
     
     # Ajustar a coluna 'date' conforme a opção com_data
     if com_data:
-        if 'date' not in df.columns:
+        if 'date' in df.columns:
+            final = final[~final['date'].isnull()]  # Remove linhas onde 'date' é nulo
+        else:
             raise ValueError("A coluna 'date' não está presente no dataframe original")
-        final = final[~final['date'].isnull()]  # Remove linhas onde 'date' é nulo
     else:
         if 'date' in final.columns:
             final = final.drop(columns=['date'])
