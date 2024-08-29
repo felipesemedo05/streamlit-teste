@@ -170,34 +170,34 @@ if uploaded_file is not None:
         #     # Exibe o mapa
         #     folium_static(mapa)
            # Adicionando o Mapa Interativo com Cores Baseadas em 'uniques'
-        if 'latitude' in final.columns and 'longitude' in final.columns and 'uniques' in final.columns:
-            st.header("Mapa Interativo com Localizações")
-            
-            # Configurando o Layer do Mapa
-            layer = pdk.Layer(
-                'ScatterplotLayer',
-                data=final,
-                get_position='[longitude, latitude]',
-                get_color='[255, 140, 0, uniques/uniques.max()*255]',
-                get_radius=200,
-                pickable=True,
-                auto_highlight=True
-            )
-
-            # Configurando a Visualização
-            view_state = pdk.ViewState(
-                latitude=final['latitude'].mean(),
-                longitude=final['longitude'].mean(),
-                zoom=10,
-                pitch=50,
-            )
-
-            # Criando o mapa com pydeck
-            st.pydeck_chart(pdk.Deck(
-                layers=[layer],
-                initial_view_state=view_state,
-                tooltip={"text": "Location ID: {location_id}\nUniques: {uniques}\nImpressions: {impressions}"}
-            ))
+            if 'latitude' in final.columns and 'longitude' in final.columns and 'uniques' in final.columns:
+                st.header("Mapa Interativo com Localizações")
+                
+                # Configurando o Layer do Mapa
+                layer = pdk.Layer(
+                    'ScatterplotLayer',
+                    data=final,
+                    get_position='[longitude, latitude]',
+                    get_color='[255, 140, 0, uniques/uniques.max()*255]',
+                    get_radius=200,
+                    pickable=True,
+                    auto_highlight=True
+                )
+    
+                # Configurando a Visualização
+                view_state = pdk.ViewState(
+                    latitude=final['latitude'].mean(),
+                    longitude=final['longitude'].mean(),
+                    zoom=10,
+                    pitch=50,
+                )
+    
+                # Criando o mapa com pydeck
+                st.pydeck_chart(pdk.Deck(
+                    layers=[layer],
+                    initial_view_state=view_state,
+                    tooltip={"text": "Location ID: {location_id}\nUniques: {uniques}\nImpressions: {impressions}"}
+                ))
     
 
         #st.map(data=final[['latitude', 'longitude']])
