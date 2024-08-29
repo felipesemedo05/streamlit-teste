@@ -6,8 +6,8 @@ from io import BytesIO
 import openpyxl
 import pydeck as pdk
 import numpy as np
-import matplotlib.pyplot as plt
-import seaborn as sns
+import plotly.express as px
+import plotly.graph_objects as go
 
 # Função para aplicar as transformações
 def processar_arquivo(df, claro):
@@ -172,21 +172,15 @@ elif aba_selecionada == "Dashboard":
         
         # Gráfico 1: Distribuição de 'impressions'
         st.subheader("Distribuição de 'Impressions'")
-        plt.figure(figsize=(10, 6))
-        sns.histplot(final['impressions'], kde=True, bins=30)
-        plt.xlabel('Impressions')
-        plt.ylabel('Frequência')
-        plt.title('Distribuição de Impressions')
-        st.pyplot()
+        fig = px.histogram(final, x='impressions', nbins=30, title='Distribuição de Impressions')
+        fig.update_layout(xaxis_title='Impressions', yaxis_title='Frequência')
+        st.plotly_chart(fig)
 
         # Gráfico 2: Frequência vs. Unique Impressions
         st.subheader("Frequência vs. Unique Impressions")
-        plt.figure(figsize=(10, 6))
-        sns.scatterplot(data=final, x='uniques', y='frequencia', alpha=0.7)
-        plt.xlabel('Unique Impressions')
-        plt.ylabel('Frequência')
-        plt.title('Frequência vs. Unique Impressions')
-        st.pyplot()
+        fig = px.scatter(final, x='uniques', y='frequencia', title='Frequência vs. Unique Impressions', trendline='ols')
+        fig.update_layout(xaxis_title='Unique Impressions', yaxis_title='Frequência')
+        st.plotly_chart(fig)
         
     else:
         st.warning("Nenhum dado processado encontrado. Por favor, carregue e processe um arquivo primeiro.")
