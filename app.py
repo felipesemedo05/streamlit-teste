@@ -3,6 +3,7 @@ import pandas as pd
 import folium
 from streamlit_folium import st_folium
 import numpy as np
+import os
 
 # Função para criar o mapa com Folium
 def criar_mapa_folium(df, coluna_cor, cor_inicial, cor_final):
