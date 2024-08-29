@@ -167,6 +167,11 @@ if uploaded_file is not None:
         paleta_cores = [cor_inicial, cor_final]
         color_range = [list(int(c[1:][i:i+2], 16) for i in (0, 2, 4)) for c in paleta_cores]
         
+        # Normalizar os valores da coluna de cor para o intervalo [0, 1]
+        valores = final[coluna_cor].fillna(0).astype(float)
+        min_val, max_val = valores.min(), valores.max()
+        final['normalized_color'] = (valores - min_val) / (max_val - min_val)
+        
         # Map
         mapa = pdk.Deck(
             initial_view_state=pdk.ViewState(
@@ -180,12 +185,10 @@ if uploaded_file is not None:
                     "ScatterplotLayer",
                     data=final,
                     get_position=["longitude", "latitude"],
-                    get_color=coluna_cor,
-                    get_radius=1000,
-                    radius_scale=10,
-                    radius_min_pixels=1,
-                    radius_max_pixels=100,
+                    get_color=[lambda x: [int(c[0] * 255) for c in color_range]],
+                    get_radius=100,
                     pickable=True,
+                    opacity=0.8
                 )
             ],
             map_style='mapbox://styles/mapbox/light-v9',
@@ -193,6 +196,10 @@ if uploaded_file is not None:
         )
         
         st.pydeck_chart(mapa)
+
+        # Legenda
+        st.write(f"Legenda da cor baseada em: {coluna_cor}")
+        st.write(f"Cor inicial: {cor_inicial}, Cor final: {cor_final}")
 
     except Exception as e:
         st.error(f"Ocorreu um erro ao processar o arquivo: {e}")
