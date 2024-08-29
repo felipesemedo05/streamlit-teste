@@ -4,8 +4,8 @@ import os
 from datetime import datetime
 from io import BytesIO
 import openpyxl
-from keplergl import KeplerGl
-import json
+import pydeck as pdk
+import numpy as np
 
 # Função para aplicar as transformações
 def processar_arquivo(df, claro):
@@ -42,79 +42,8 @@ def processar_arquivo(df, claro):
     
     return final
 
-# Função para gerar o mapa KeplerGl
-def gerar_mapa_kepler_gl(df, coluna_cor, paleta_cores):
-    # Configuração do mapa
-    mapa_config = {
-        "version": "v1",
-        "config": {
-            "visState": {
-                "layers": [
-                    {
-                        "id": "scatterplot",
-                        "type": "scatterplot",
-                        "config": {
-                            "dataId": "data",
-                            "label": "Mapa de Localizações",
-                            "color": [255, 0, 0],
-                            "columns": {
-                                "lat": "latitude",
-                                "lng": "longitude",
-                                "color": coluna_cor
-                            },
-                            "isVisible": True,
-                            "visConfig": {
-                                "radius": 10,
-                                "fixedRadius": False,
-                                "opacity": 0.8,
-                                "outline": False,
-                                "colorRange": {
-                                    "name": "Custom",
-                                    "type": "custom",
-                                    "category": "Custom",
-                                    "colors": paleta_cores
-                                },
-                                "radiusRange": [0, 50]
-                            }
-                        }
-                    }
-                ],
-                "filters": [],
-                "interactionConfig": {
-                    "tooltip": {
-                        "fieldsToShow": {
-                            "data": [
-                                {"name": "location_id", "format": None},
-                                {"name": coluna_cor, "format": None}
-                            ]
-                        },
-                        "enabled": True
-                    }
-                },
-                "mapState": {
-                    "latitude": df['latitude'].mean(),
-                    "longitude": df['longitude'].mean(),
-                    "zoom": 10,
-                    "pitch": 0,
-                    "bearing": 0
-                }
-            },
-            "mapStyle": {
-                "styleType": "light",
-                "topLayerGroups": {},
-                "visibleLayerGroups": {
-                    "label": True,
-                    "road": True,
-                    "border": True
-                }
-            }
-        }
-    }
-    
-    return mapa_config
-
 # Interface do Streamlit
-st.set_page_config(page_title='oi Processamento de Arquivo', layout='wide')
+st.set_page_config(page_title='Processamento de Arquivo', layout='wide')
 
 st.title('Processamento de Arquivo CSV e Parquet')
 
@@ -224,7 +153,7 @@ if uploaded_file is not None:
                 mime='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
             )
         
-        # Seção de Mapa KeplerGl
+        # Seção de Mapa com pydeck
         st.header("Mapa Interativo")
 
         # Seleção da coluna para a cor
@@ -234,13 +163,36 @@ if uploaded_file is not None:
         cor_inicial = st.color_picker("Escolha a cor inicial da paleta", "#FFFFFF")
         cor_final = st.color_picker("Escolha a cor final da paleta", "#FF0000")
 
-        # Adiciona cores à paleta conforme necessário
+        # Criar a paleta de cores para o pydeck
         paleta_cores = [cor_inicial, cor_final]
-
-        # Gerar e exibir o mapa
-        mapa_config = gerar_mapa_kepler_gl(final, coluna_cor, paleta_cores)
-        m = KeplerGl(height=600, config=mapa_config)
-        st.write(m)
+        color_range = [list(int(c[1:][i:i+2], 16) for i in (0, 2, 4)) for c in paleta_cores]
+        
+        # Map
+        mapa = pdk.Deck(
+            initial_view_state=pdk.ViewState(
+                latitude=final['latitude'].mean(),
+                longitude=final['longitude'].mean(),
+                zoom=10,
+                pitch=0
+            ),
+            layers=[
+                pdk.Layer(
+                    "ScatterplotLayer",
+                    data=final,
+                    get_position=["longitude", "latitude"],
+                    get_color=coluna_cor,
+                    get_radius=1000,
+                    radius_scale=10,
+                    radius_min_pixels=1,
+                    radius_max_pixels=100,
+                    pickable=True,
+                )
+            ],
+            map_style='mapbox://styles/mapbox/light-v9',
+            tooltip={"text": "{location_id}\n{coluna_cor}"}
+        )
+        
+        st.pydeck_chart(mapa)
 
     except Exception as e:
         st.error(f"Ocorreu um erro ao processar o arquivo: {e}")
