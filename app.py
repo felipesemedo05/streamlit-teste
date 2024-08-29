@@ -152,43 +152,44 @@ if uploaded_file is not None:
             )
 
         # Seção de Mapa Interativo
-        st.header("Mapa Interativo")
-
+        st.header("Mapa Interativo 2D com Escala de Cor")
+        
         # Selecionar coluna para escala
         coluna_selecionada = st.selectbox(
-            "Selecione a coluna para definir a escala do mapa:",
+            "Selecione a coluna para definir a escala de cor do mapa:",
             options=['impressions', 'uniques']
         )
-
-        # Mapa com pydeck
+        
+        # Mapa de Pontos com escala de cor
         layer = pdk.Layer(
-            'HeatmapLayer',
+            'ScatterplotLayer',
             data=final,
             get_position='[longitude, latitude]',
-            get_weight=f'[{coluna_selecionada}]',
-            radius=500,
-            elevation_scale=50,
-            elevation_range=[0, 3000],
+            get_color=f'[{coluna_selecionada}, 100, 255-{coluna_selecionada}, 200]',
+            get_radius=200,
             pickable=True,
-            extruded=True,
         )
-
+        
         # Configuração inicial do mapa
         view_state = pdk.ViewState(
             latitude=final['latitude'].mean(),
             longitude=final['longitude'].mean(),
             zoom=10,
-            pitch=50,
+            pitch=0,  # 2D
         )
-
+        
         # Renderização do mapa
         r = pdk.Deck(
             layers=[layer],
             initial_view_state=view_state,
-            tooltip={"text": "{location_id}\nImpressions: {impressions}\nUniques: {uniques}"}
+            tooltip={"text": "{location_id}\nImpressions: {impressions}\nUniques: {uniques}"},
         )
-
+        
         st.pydeck_chart(r)
+        
+        # Exibir legenda (apenas uma imagem para simplificação)
+        st.image("https://via.placeholder.com/150x50.png?text=Legenda", caption="Legenda: Escala de Cor")
+
 
     except Exception as e:
         st.error(f"Ocorreu um erro ao processar o arquivo: {e}")
