@@ -114,7 +114,7 @@ def gerar_mapa_kepler_gl(df, coluna_cor, paleta_cores):
     return mapa_config
 
 # Interface do Streamlit
-st.set_page_config(page_title='Processamento de Arquivo', layout='wide')
+st.set_page_config(page_title='oi Processamento de Arquivo', layout='wide')
 
 st.title('Processamento de Arquivo CSV e Parquet')
 
@@ -239,7 +239,7 @@ if uploaded_file is not None:
 
         # Gerar e exibir o mapa
         mapa_config = gerar_mapa_kepler_gl(final, coluna_cor, paleta_cores)
-        m = KeplerGl(height=600, config=json.dumps(mapa_config))
+        m = KeplerGl(height=600, config=mapa_config)
         st.write(m)
 
     except Exception as e:
