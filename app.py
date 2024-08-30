@@ -102,6 +102,21 @@ if uploaded_file is not None:
 
         total_por_classe = df_classe[df_classe['class'].isin(lista_classes)].groupby('class')['uniques'].sum().to_dict()
 
+        # Cálculo do total de alcance
+        total_alcance = df[((df['class'].isnull()) & 
+                            (df['location_id'].isnull()) & 
+                            (df['gender_group'].isnull()) & 
+                            (df['country'].isnull()) & 
+                            (df['date'].isnull()) & 
+                            (df['age_group'].isnull()) & 
+                            (df['impression_hour'].isnull()) & 
+                            (df['num_total_impressions'].isnull()) & 
+                            (df['home'].isnull()))]['uniques'].sum()
+
+        # Cálculo da porcentagem por classe
+        porcentagem_por_classe = {classe: (total / total_alcance) * 100 
+                                  for classe, total in total_por_classe.items()}
+
         # Criar buffers para arquivos
         output_csv = BytesIO()
         output_excel = BytesIO()
@@ -142,8 +157,10 @@ if uploaded_file is not None:
                 
             # Estatísticas por Classe
             st.subheader("Estatísticas por Classe")
-            for classe, total in total_por_classe.items():
-                st.write(f"Soma de 'uniques' para a classe {classe}: {total}")
+            for classe in lista_classes:
+                total_classe = total_por_classe.get(classe, 0)
+                porcentagem_classe = porcentagem_por_classe.get(classe, 0.0)
+                st.write(f"Classe {classe}: Total de 'uniques' = {total_classe}, Porcentagem = {porcentagem_classe:.2f}%")
 
         # Seção de Dados Processados e Downloads
         with col2:
