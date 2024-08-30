@@ -215,8 +215,15 @@ if uploaded_file is not None:
 
             # Exibir porcentagens por gênero
             st.subheader("Porcentagem por Gênero")
+
+            # Dicionário para mapear os gêneros às faixas desejadas
+            genero_dict = {
+                'F': 'Feminino',
+                'M': 'Masculino'
+            }
             for genero, porcentagem in porcentagem_por_genero.items():
-                st.write(f"{genero}: {porcentagem:.2f}%")
+                genero_faixa = genero_dict.get(genero, genero)
+                st.write(f"{genero_faixa}: {porcentagem:.2f}%")
 
             # Exibição das porcentagens por faixa etária
             st.subheader("Porcentagem por Faixa Etária")
@@ -245,7 +252,7 @@ if uploaded_file is not None:
             )
             selected_genders = st.multiselect(
                 "Selecione os Gêneros",
-                options=lista_genero,
+                options=(genero_dict.values()),
             )
             selected_ages = st.multiselect(
                 "Selecione as Faixas Etárias",
@@ -254,7 +261,7 @@ if uploaded_file is not None:
 
             # Calcular a soma das porcentagens selecionadas
             soma_porcentagem_classes = sum(porcentagem_por_classe[classe] for classe in selected_classes)
-            soma_porcentagem_generos = sum(porcentagem_por_genero[genero] for genero in selected_genders)
+            soma_porcentagem_generos = sum(porcentagem_por_genero[genero] for genero, genero_faixa in genero_dict.items() if genero_faixa in selected_genders)
             soma_porcentagem_idades = sum(porcentagem_por_idade[idade] for idade, faixa in faixas_etarias.items() if faixa in selected_ages)
 
             # Calcular a composição
