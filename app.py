@@ -71,41 +71,40 @@ if uploaded_file is not None:
         # Criar uma lista das colunas preenchidas (não vazias)
         colunas_preenchidas = final.columns.tolist()
 
-        # Espaço para selecionar colunas para download
-        st.header("Seleção de Colunas para Download")
-        colunas_selecionadas = st.multiselect(
-            "Escolha as colunas que deseja incluir no download:",
-            options=colunas_preenchidas
-        )
-
-        # Filtrar o DataFrame com base nas colunas selecionadas
-        final_filtrado = final[colunas_selecionadas]
-
-        # Criar buffers para arquivos
-        output_csv = BytesIO()
-        output_excel = BytesIO()
-
-        # Definir o nome do arquivo processado CSV
-        processed_filename_csv = f"{original_filename}_processado_{datetime.now().strftime('%Y-%m-%d')}.csv"
-
-        # Definir o nome do arquivo processado EXCEL
-        processed_filename_xlsx = f"{original_filename}_processado_{datetime.now().strftime('%Y-%m-%d')}.xlsx"
-
-        # Criar o CSV
-        final_filtrado.to_csv(output_csv, index=False)
-        output_csv.seek(0)
-
-        # Criar o Excel
-        with pd.ExcelWriter(output_excel, engine='openpyxl') as writer:
-            final_filtrado.to_excel(writer, index=False, sheet_name='Dados Processados')
-        output_excel.seek(0)
-
         # Abas para Navegação
         tab1, tab2, tab3 = st.tabs(["Ponto a Ponto", "Estatísticas Descritivas", "Composição"])
 
         with tab1:
             st.header("Ponto a Ponto")
+            st.write("Seleção de Colunas para Download:")
+            colunas_selecionadas = st.multiselect(
+                "Escolha as colunas que deseja incluir no download:",
+                options=colunas_preenchidas,
+                default=colunas_preenchidas
+            )
+
+            # Filtrar o DataFrame com base nas colunas selecionadas
+            final_filtrado = final[colunas_selecionadas]
             st.dataframe(final_filtrado)
+
+            # Criar buffers para arquivos
+            output_csv = BytesIO()
+            output_excel = BytesIO()
+
+            # Definir o nome do arquivo processado CSV
+            processed_filename_csv = f"{original_filename}_processado_{datetime.now().strftime('%Y-%m-%d')}.csv"
+
+            # Definir o nome do arquivo processado EXCEL
+            processed_filename_xlsx = f"{original_filename}_processado_{datetime.now().strftime('%Y-%m-%d')}.xlsx"
+
+            # Criar o CSV
+            final_filtrado.to_csv(output_csv, index=False)
+            output_csv.seek(0)
+
+            # Criar o Excel
+            with pd.ExcelWriter(output_excel, engine='openpyxl') as writer:
+                final_filtrado.to_excel(writer, index=False, sheet_name='Dados Processados')
+            output_excel.seek(0)
 
             st.download_button(
                 label="Baixar CSV Processado",
@@ -126,8 +125,7 @@ if uploaded_file is not None:
             col1, col2 = st.columns([2, 3])
 
             with col1:
-                st.write(periodo_info)
-                st.write(f"Quantidade de location_id: {unique_location_ids}")
+                st.write(f"Quantidade de location_id: {final['location_id'].nunique()}")
 
                 if 'impressions' in df.columns:            
                     st.subheader("Estatísticas de 'impressions'")
@@ -174,14 +172,17 @@ if uploaded_file is not None:
             selected_classes = st.multiselect(
                 "Selecione as Classes Sociais",
                 options=lista_classes,
+                default=['A', 'B1', 'B2']
             )
             selected_genders = st.multiselect(
                 "Selecione os Gêneros",
                 options=lista_genero,
+                default=['F', 'M']
             )
             selected_ages = st.multiselect(
                 "Selecione as Faixas Etárias",
                 options=[faixa for idade, faixa in faixas_etarias.items()],
+                default=['20-29', '30-39', '40-49']
             )
 
             # Soma das porcentagens selecionadas
