@@ -42,7 +42,7 @@ def processar_arquivo(df, claro):
 # Interface do Streamlit
 st.set_page_config(page_title='Processamento de Arquivo', layout='wide')
 
-st.title('oi Processamento de Arquivo CSV e Parquet')
+st.title('Processamento de Arquivo CSV e Parquet')
 
 # Upload do arquivo CSV ou Parquet
 uploaded_file = st.file_uploader("Escolha um arquivo CSV ou Parquet para o dataset principal", type=["csv", "parquet"])
@@ -88,6 +88,20 @@ if uploaded_file is not None:
         # Contagem de location_id únicos
         unique_location_ids = final['location_id'].nunique()
 
+        # Cálculo das somas de 'uniques' por classe
+        lista_classes = ['A', 'B1', 'B2', 'C1', 'C2', 'DE']
+        df_classe = df[((~df['class'].isnull()) & 
+                        (df['location_id'].isnull()) & 
+                        (df['gender_group'].isnull()) & 
+                        (df['country'].isnull()) & 
+                        (df['date'].isnull()) & 
+                        (df['age_group'].isnull()) & 
+                        (df['impression_hour'].isnull()) & 
+                        (df['num_total_impressions'].isnull()) & 
+                        (df['home'].isnull()))]
+
+        total_por_classe = df_classe[df_classe['class'].isin(lista_classes)].groupby('class')['uniques'].sum().to_dict()
+
         # Criar buffers para arquivos
         output_csv = BytesIO()
         output_excel = BytesIO()
@@ -125,6 +139,11 @@ if uploaded_file is not None:
                 st.subheader("Estatísticas de 'uniques'")
                 uniques_describe = round(final['uniques'].describe(), 2).to_dict()
                 st.write(uniques_describe)
+                
+            # Estatísticas por Classe
+            st.subheader("Estatísticas por Classe")
+            for classe, total in total_por_classe.items():
+                st.write(f"Soma de 'uniques' para a classe {classe}: {total}")
 
         # Seção de Dados Processados e Downloads
         with col2:
