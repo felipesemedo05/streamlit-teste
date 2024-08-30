@@ -128,6 +128,17 @@ if uploaded_file is not None:
                             (df['num_total_impressions'].isnull()) & 
                             (df['home'].isnull()))]['uniques'].sum()
 
+        # Cálculo do total de impactos
+        total_impactos = df[((df['class'].isnull()) & 
+                            (df['location_id'].isnull()) & 
+                            (df['gender_group'].isnull()) & 
+                            (df['country'].isnull()) & 
+                            (df['date'].isnull()) & 
+                            (df['age_group'].isnull()) & 
+                            (df['impression_hour'].isnull()) & 
+                            (df['num_total_impressions'].isnull()) & 
+                            (df['home'].isnull()))]['impressions'].sum()
+        
         # Cálculo da porcentagem por classe
         porcentagem_por_classe = {classe: (total / total_alcance) * 100 
                                   for classe, total in total_por_classe.items()}
@@ -270,10 +281,26 @@ if uploaded_file is not None:
             # Calcular o alcance no target (alcance*composicao)
             alcance_target = (composicao/100)*total_alcance
 
+            #Calcular os impactos no target (impactos*composicao)
+            impactos_target = (composicao/100)*total_impactos
+
             # Exibir o resultado da composição
             st.write(f"Composição Selecionada: {composicao:.2f}%")
 
-            # Exibir o resultado do alcance e alcance no target
+            # Título para métricas
+            st.header("Métricas")
+
+            # Impactos
+            st.subheader("Impactos")
+
+            # Impactos gerais e impactos no target
+            st.write(f"Impactos gerais: {round(total_impactos)}")
+            st.write(f"Impactos no target: {round(impactos_target)}")
+
+            # Alcance
+            st.subheader("Alcance")
+            
+            # Alcance geral e alcance no target
             st.write(f"Alcance geral: {round(total_alcance)}")
             st.write(f"Alcance no target: {round(alcance_target)}")
 
