@@ -136,6 +136,25 @@ if uploaded_file is not None:
         porcentagem_por_genero = {genero: (total / total_alcance) * 100 
                                   for genero, total in total_por_genero.items()}
 
+        # Cálculo das somas de 'uniques' por faixa etária
+        lista_idade = ['20', '30', '40', '50', '60', '70', '80']
+        df_idade = df[((df['class'].isnull()) & 
+                       (df['location_id'].isnull()) & 
+                       ~(df['gender_group'].isnull()) & 
+                       (df['country'].isnull()) & 
+                       (df['date'].isnull()) & 
+                       ~(df['age_group'].isnull()) & 
+                       (df['impression_hour'].isnull()) & 
+                       (df['num_total_impressions'].isnull()) & 
+                       (df['home'].isnull()))]
+
+        total_por_idade = df_idade[(df_idade['age_group'].isin(lista_idade)) & 
+                                   (df_idade['gender_group'] != 'U')].groupby('age_group')['uniques'].sum().to_dict()
+
+        # Cálculo da porcentagem por faixa etária
+        porcentagem_por_idade = {idade: (total / total_alcance) * 100 
+                                 for idade, total in total_por_idade.items()}
+
         # Criar buffers para arquivos
         output_csv = BytesIO()
         output_excel = BytesIO()
@@ -173,7 +192,7 @@ if uploaded_file is not None:
                 st.subheader("Estatísticas de 'uniques'")
                 uniques_describe = round(final['uniques'].describe(), 2).to_dict()
                 st.write(uniques_describe)
-                
+
             # Exibir porcentagens por classe
             st.subheader("Porcentagem por Classe Social")
             for classe, porcentagem in porcentagem_por_classe.items():
@@ -183,6 +202,11 @@ if uploaded_file is not None:
             st.subheader("Porcentagem por Gênero")
             for genero, porcentagem in porcentagem_por_genero.items():
                 st.write(f"{genero}: {porcentagem:.2f}%")
+
+            # Exibir porcentagens por faixa etária
+            st.subheader("Porcentagem por Faixa Etária")
+            for idade, porcentagem in porcentagem_por_idade.items():
+                st.write(f"{idade}: {porcentagem:.2f}%")
 
         # Seção de Dados Processados e Downloads
         with col2:
