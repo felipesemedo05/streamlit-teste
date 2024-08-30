@@ -137,7 +137,7 @@ if uploaded_file is not None:
                                   for genero, total in total_por_genero.items()}
 
         # Cálculo das somas de 'uniques' por faixa etária
-        lista_idade = ['20', '30', '40', '50', '60', '70', '80']
+        lista_idade = [20.0, 30.0, 40.0, 50.0, 60.0, 70.0, 80.0]
         df_idade = df[((df['class'].isnull()) & 
                        (df['location_id'].isnull()) & 
                        ~(df['gender_group'].isnull()) & 
