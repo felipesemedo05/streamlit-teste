@@ -181,12 +181,12 @@ if uploaded_file is not None:
         processed_filename_xlsx = f"{original_filename}_processado_{datetime.now().strftime('%Y-%m-%d')}.xlsx"
 
         # Criar o CSV
-        final.to_csv(output_csv, index=False)
+        final_filtrado.to_csv(output_csv, index=False)
         output_csv.seek(0)
 
         # Criar o Excel
         with pd.ExcelWriter(output_excel, engine='openpyxl') as writer:
-            final.to_excel(writer, index=False, sheet_name='Dados Processados')
+            final_filtrado.to_excel(writer, index=False, sheet_name='Dados Processados')
         output_excel.seek(0)
 
         # Layout de colunas
@@ -267,7 +267,7 @@ if uploaded_file is not None:
         # Seção de Dados Processados e Downloads
         with col2:
             st.header("Dados Processados")
-            st.dataframe(final.head())
+            st.dataframe(final_filtrado.head())
 
             st.download_button(
                 label="💾 Baixar Arquivo Processado (CSV)",
@@ -282,7 +282,7 @@ if uploaded_file is not None:
                 file_name=processed_filename_xlsx,
                 mime='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
             )
-        st.map(data=final[['latitude', 'longitude']])
+        #st.map(data=final[['latitude', 'longitude']])
 
     except Exception as e:
         st.error(f"Ocorreu um erro ao processar os arquivos: {e}")
