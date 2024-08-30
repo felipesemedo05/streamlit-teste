@@ -117,6 +117,25 @@ if uploaded_file is not None:
         porcentagem_por_classe = {classe: (total / total_alcance) * 100 
                                   for classe, total in total_por_classe.items()}
 
+        # Cálculo das somas de 'uniques' por gênero
+        lista_genero = ['F', 'M']
+        df_genero = df[((df['class'].isnull()) & 
+                        (df['location_id'].isnull()) & 
+                        ~(df['gender_group'].isnull()) & 
+                        (df['country'].isnull()) & 
+                        (df['date'].isnull()) & 
+                        ~(df['age_group'].isnull()) & 
+                        (df['impression_hour'].isnull()) & 
+                        (df['num_total_impressions'].isnull()) & 
+                        (df['home'].isnull()))]
+
+        total_por_genero = df_genero[(df_genero['gender_group'].isin(lista_genero)) & 
+                                     (df_genero['age_group'] != 0)].groupby('gender_group')['uniques'].sum().to_dict()
+
+        # Cálculo da porcentagem por gênero
+        porcentagem_por_genero = {genero: (total / total_alcance) * 100 
+                                  for genero, total in total_por_genero.items()}
+
         # Criar buffers para arquivos
         output_csv = BytesIO()
         output_excel = BytesIO()
@@ -155,12 +174,15 @@ if uploaded_file is not None:
                 uniques_describe = round(final['uniques'].describe(), 2).to_dict()
                 st.write(uniques_describe)
                 
-            # Estatísticas por Classe
-            st.subheader("Estatísticas por Classe")
-            for classe in lista_classes:
-                total_classe = total_por_classe.get(classe, 0)
-                porcentagem_classe = porcentagem_por_classe.get(classe, 0.0)
-                st.write(f"Classe {classe}: {porcentagem_classe:.2f}%")
+            # Exibir porcentagens por classe
+            st.subheader("Porcentagem por Classe Social")
+            for classe, porcentagem in porcentagem_por_classe.items():
+                st.write(f"{classe}: {porcentagem:.2f}%")
+
+            # Exibir porcentagens por gênero
+            st.subheader("Porcentagem por Gênero")
+            for genero, porcentagem in porcentagem_por_genero.items():
+                st.write(f"{genero}: {porcentagem:.2f}%")
 
         # Seção de Dados Processados e Downloads
         with col2:
