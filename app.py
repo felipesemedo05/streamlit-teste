@@ -256,7 +256,7 @@ if uploaded_file is not None:
             )
             selected_genders = st.multiselect(
                 "Selecione os Gêneros",
-                options=lista_genero
+                options=[faixa_genero for genero, faixa_genero in genero_dict.items()]
             )
             selected_ages = st.multiselect(
                 "Selecione as Faixas Etárias",
