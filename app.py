@@ -211,13 +211,28 @@ if uploaded_file is not None:
 
             if 'impressions' in df.columns:            
                 st.subheader("Estatísticas de 'impressions'")
-                impressions_describe = round(final['impressions'].describe(), 2).to_list()
-                st.write(impressions_describe)
+                impressions_describe = final['impressions'].describe()
+                st.write(f"Contagem: {impressions_describe['count']}")
+                st.write(f"Média: {impressions_describe['mean']:.2f}")
+                st.write(f"Desvio Padrão: {impressions_describe['std']:.2f}")
+                st.write(f"Mínimo: {impressions_describe['min']}")
+                st.write(f"25º Percentil: {impressions_describe['25%']}")
+                st.write(f"Mediana (50º Percentil): {impressions_describe['50%']}")
+                st.write(f"75º Percentil: {impressions_describe['75%']}")
+                st.write(f"Máximo: {impressions_describe['max']}")
 
             if 'uniques' in df.columns:
                 st.subheader("Estatísticas de 'uniques'")
-                uniques_describe = round(final['uniques'].describe(), 2).to_dict()
-                st.write(uniques_describe)
+                uniques_describe = final['uniques'].describe()
+                st.write(f"Contagem: {uniques_describe['count']}")
+                st.write(f"Média: {uniques_describe['mean']:.2f}")
+                st.write(f"Desvio Padrão: {uniques_describe['std']:.2f}")
+                st.write(f"Mínimo: {uniques_describe['min']}")
+                st.write(f"25º Percentil: {uniques_describe['25%']}")
+                st.write(f"Mediana (50º Percentil): {uniques_describe['50%']}")
+                st.write(f"75º Percentil: {uniques_describe['75%']}")
+                st.write(f"Máximo: {uniques_describe['max']}")
+
 
             # Exibir porcentagens por classe
             st.subheader("Porcentagem por Classe Social")
