@@ -267,9 +267,14 @@ if uploaded_file is not None:
             # Calcular a composição
             composicao = soma_porcentagem_classes * soma_porcentagem_generos * soma_porcentagem_idades / 10000  # Dividido por 10000 para ajustar a porcentagem
 
+            # Calcular o alcance no target (alcance*composicao)
+            alcance_target = (composicao/100)*total_alcance
+
             # Exibir o resultado da composição
             st.write(f"Composição Selecionada: {composicao:.2f}%")
 
+            # Exibir o resultado do alcance target
+            st.write(f"Alcance no target: {alcance_target}")
 
         # Seção de Dados Processados e Downloads
         with col2:
