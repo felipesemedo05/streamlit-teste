@@ -203,10 +203,24 @@ if uploaded_file is not None:
             for genero, porcentagem in porcentagem_por_genero.items():
                 st.write(f"{genero}: {porcentagem:.2f}%")
 
-            # Exibir porcentagens por faixa etária
+            # Exibição das porcentagens por faixa etária
             st.subheader("Porcentagem por Faixa Etária")
+
+            # Dicionário para mapear as idades às faixas desejadas
+            faixas_etarias = {
+                '20': '20-29',
+                '30': '30-39',
+                '40': '40-49',
+                '50': '50-59',
+                '60': '60-69',
+                '70': '70-79',
+                '80': '80+'
+            }
+
+            # Exibir as porcentagens com as faixas etárias ajustadas
             for idade, porcentagem in porcentagem_por_idade.items():
-                st.write(f"{idade}: {porcentagem:.2f}%")
+                faixa = faixas_etarias.get(idade, idade)
+                st.write(f"{faixa}: {porcentagem:.2f}%")
 
         # Seção de Dados Processados e Downloads
         with col2:
