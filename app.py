@@ -160,7 +160,7 @@ if uploaded_file is not None:
             for classe in lista_classes:
                 total_classe = total_por_classe.get(classe, 0)
                 porcentagem_classe = porcentagem_por_classe.get(classe, 0.0)
-                st.write(f"Classe {classe}: Total de 'uniques' = {total_classe}, Porcentagem = {porcentagem_classe:.2f}%")
+                st.write(f"Classe {classe}: {porcentagem_classe:.2f}%")
 
         # Seção de Dados Processados e Downloads
         with col2:
