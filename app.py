@@ -222,6 +222,36 @@ if uploaded_file is not None:
                 faixa = faixas_etarias.get(idade, idade)
                 st.write(f"{faixa}: {porcentagem:.2f}%")
 
+            # Espaço para calcular a composição
+            st.header("Cálculo de Composição")
+            selected_classes = st.multiselect(
+                "Selecione as Classes Sociais",
+                options=lista_classes,
+                default=['A', 'B1', 'B2']
+            )
+            selected_genders = st.multiselect(
+                "Selecione os Gêneros",
+                options=lista_genero,
+                default=['F', 'M']
+            )
+            selected_ages = st.multiselect(
+                "Selecione as Faixas Etárias",
+                options=list(faixas_etarias.values()),
+                default=['20-29', '30-39', '40-49']
+            )
+
+            # Calcular a soma das porcentagens selecionadas
+            soma_porcentagem_classes = sum(porcentagem_por_classe[classe] for classe in selected_classes)
+            soma_porcentagem_generos = sum(porcentagem_por_genero[genero] for genero in selected_genders)
+            soma_porcentagem_idades = sum(porcentagem_por_idade[idade] for idade, faixa in faixas_etarias.items() if faixa in selected_ages)
+
+            # Calcular a composição
+            composicao = soma_porcentagem_classes * soma_porcentagem_generos * soma_porcentagem_idades / 10000  # Dividido por 10000 para ajustar a porcentagem
+
+            # Exibir o resultado da composição
+            st.write(f"Composição Selecionada: {composicao:.2f}%")
+
+
         # Seção de Dados Processados e Downloads
         with col2:
             st.header("Dados Processados")
