@@ -273,8 +273,9 @@ if uploaded_file is not None:
             # Exibir o resultado da composição
             st.write(f"Composição Selecionada: {composicao:.2f}%")
 
-            # Exibir o resultado do alcance target
-            st.write(f"Alcance no target: {alcance_target}")
+            # Exibir o resultado do alcance e alcance no target
+            st.write(f"Alcance geral: {round(total_alcance)}")
+            st.write(f"Alcance no target: {round(alcance_target)}")
 
         # Seção de Dados Processados e Downloads
         with col2:
