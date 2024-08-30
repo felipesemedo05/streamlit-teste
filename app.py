@@ -208,13 +208,13 @@ if uploaded_file is not None:
 
             # Dicionário para mapear as idades às faixas desejadas
             faixas_etarias = {
-                '20': '20-29',
-                '30': '30-39',
-                '40': '40-49',
-                '50': '50-59',
-                '60': '60-69',
-                '70': '70-79',
-                '80': '80+'
+                20: '20-29',
+                30: '30-39',
+                40: '40-49',
+                50: '50-59',
+                60: '60-69',
+                70: '70-79',
+                80: '80+'
             }
 
             # Exibir as porcentagens com as faixas etárias ajustadas
