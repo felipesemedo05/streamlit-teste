@@ -211,12 +211,12 @@ if uploaded_file is not None:
 
             if 'impressions' in df.columns:            
                 st.subheader("Estatísticas de 'impressions'")
-                impressions_describe = round(final['impressions'].describe(), 2)#.to_dict()
+                impressions_describe = round(final['impressions'].describe(), 2).to_list()
                 st.write(impressions_describe)
 
             if 'uniques' in df.columns:
                 st.subheader("Estatísticas de 'uniques'")
-                uniques_describe = round(final['uniques'].describe(), 2)#.to_dict()
+                uniques_describe = round(final['uniques'].describe(), 2).to_dict()
                 st.write(uniques_describe)
 
             # Exibir porcentagens por classe
