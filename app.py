@@ -200,11 +200,11 @@ if uploaded_file is not None:
             final_filtrado.to_excel(writer, index=False, sheet_name='Dados Processados')
         output_excel.seek(0)
 
-        # Layout de colunas
-        col1, col2 = st.columns([2, 3])
 
-        # Seção de Estatísticas Descritivas
-        with col1:
+        # Abas para Navegação
+        tab1, tab2 = st.tabs(["Estatísticas Descritivas", "Cálculo de Target"])
+
+        with tab1:
             st.header("Estatísticas Descritivas")
             st.write(periodo_info)
             st.write(f"Quantidade de location_id: {unique_location_ids}")
@@ -233,7 +233,6 @@ if uploaded_file is not None:
                 st.write(f"75º Percentil: {uniques_describe['75%']}")
                 st.write(f"Máximo: {uniques_describe['max']}")
 
-
             # Exibir porcentagens por classe
             st.subheader("Porcentagem por Classe Social")
             for classe, porcentagem in porcentagem_por_classe.items():
@@ -241,35 +240,16 @@ if uploaded_file is not None:
 
             # Exibir porcentagens por gênero
             st.subheader("Porcentagem por Gênero")
-
-            # Dicionário para mapear os gêneros às faixas desejadas
-            genero_dict = {
-                'F': 'Feminino',
-                'M': 'Masculino'
-            }
             for genero, porcentagem in porcentagem_por_genero.items():
-                genero_faixa = genero_dict.get(genero, genero)
-                st.write(f"{genero_faixa}: {porcentagem:.2f}%")
+                st.write(f"{genero}: {porcentagem:.2f}%")
 
-            # Exibição das porcentagens por faixa etária
+            # Exibir porcentagens por faixa etária
             st.subheader("Porcentagem por Faixa Etária")
-
-            # Dicionário para mapear as idades às faixas desejadas
-            faixas_etarias = {
-                20: '20-29',
-                30: '30-39',
-                40: '40-49',
-                50: '50-59',
-                60: '60-69',
-                70: '70-79',
-                80: '80+'
-            }
-
-            # Exibir as porcentagens com as faixas etárias ajustadas
             for idade, porcentagem in porcentagem_por_idade.items():
                 faixa = faixas_etarias.get(idade, idade)
                 st.write(f"{faixa}: {porcentagem:.2f}%")
 
+        with tab2:
             # Espaço para calcular a composição
             st.header("Cálculo de Composição")
             selected_classes = st.multiselect(
@@ -320,7 +300,9 @@ if uploaded_file is not None:
             st.write(f"Alcance no target: {round(alcance_target)}")
 
         # Seção de Dados Processados e Downloads
-        with col2:
+        st.header("Download dos Arquivos Processados")        
+        col1, col2 = st.columns([2,3])
+        with col1:
             st.header("Dados Processados")
             st.dataframe(final_filtrado.head())
 
@@ -330,7 +312,7 @@ if uploaded_file is not None:
                 file_name=processed_filename_csv,
                 mime='text/csv',
             )
-
+        with col2:
             st.download_button(
                 label="💾 Baixar Arquivo Processado (Excel)",
                 data=output_excel,
