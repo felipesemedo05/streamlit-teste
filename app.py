@@ -125,36 +125,9 @@ if uploaded_file is not None:
             col1, col2 = st.columns([2, 3])
 
             with col1:
-                st.write(f"Quantidade de location_id: {final_filtrado['location_id'].nunique()}")
+                st.write(f"Quantidade de location_id: {final['location_id'].nunique()}")
 
-            # Estatísticas de 'impressions'
-            if 'impressions' in df.columns:
-                st.subheader("Estatísticas de 'impressions'")
-                impressions_describe = final_filtrado['impressions'].describe()
-                st.write(f"Contagem: {impressions_describe['count']}")
-                st.write(f"Média: {impressions_describe['mean']:.2f}")
-                st.write(f"Desvio Padrão: {impressions_describe['std']:.2f}")
-                st.write(f"Mínimo: {impressions_describe['min']}")
-                st.write(f"25º Percentil: {impressions_describe['25%']}")
-                st.write(f"Mediana (50º Percentil): {impressions_describe['50%']}")
-                st.write(f"75º Percentil: {impressions_describe['75%']}")
-                st.write(f"Máximo: {impressions_describe['max']}")
-
-            # Estatísticas de 'uniques'
-            if 'uniques' in df.columns:
-                st.subheader("Estatísticas de 'uniques'")
-                uniques_describe = final_filtrado['uniques'].describe()
-                st.write(f"Contagem: {uniques_describe['count']}")
-                st.write(f"Média: {uniques_describe['mean']:.2f}")
-                st.write(f"Desvio Padrão: {uniques_describe['std']:.2f}")
-                st.write(f"Mínimo: {uniques_describe['min']}")
-                st.write(f"25º Percentil: {uniques_describe['25%']}")
-                st.write(f"Mediana (50º Percentil): {uniques_describe['50%']}")
-                st.write(f"75º Percentil: {uniques_describe['75%']}")
-                st.write(f"Máximo: {uniques_describe['max']}")
-
-            # Estatísticas por Classe Social
-            st.subheader("Porcentagem por Classe Social")
+            # Cálculo das somas de 'uniques' por classe
             lista_classes = ['A', 'B1', 'B2', 'C1', 'C2', 'DE']
             df_classe = df[((~df['class'].isnull()) & 
                             (df['location_id'].isnull()) & 
@@ -167,6 +140,8 @@ if uploaded_file is not None:
                             (df['home'].isnull()))]
 
             total_por_classe = df_classe[df_classe['class'].isin(lista_classes)].groupby('class')['uniques'].sum().to_dict()
+
+            # Cálculo do total de alcance
             total_alcance = df[((df['class'].isnull()) & 
                                 (df['location_id'].isnull()) & 
                                 (df['gender_group'].isnull()) & 
@@ -176,35 +151,80 @@ if uploaded_file is not None:
                                 (df['impression_hour'].isnull()) & 
                                 (df['num_total_impressions'].isnull()) & 
                                 (df['home'].isnull()))]['uniques'].sum()
+
+            # Cálculo da porcentagem por classe
             porcentagem_por_classe = {classe: (total / total_alcance) * 100 
                                       for classe, total in total_por_classe.items()}
+
+            # Cálculo das somas de 'uniques' por gênero
+            lista_genero = ['F', 'M']
+            df_genero = df[((df['class'].isnull()) & 
+                            (df['location_id'].isnull()) & 
+                            ~(df['gender_group'].isnull()) & 
+                            (df['country'].isnull()) & 
+                            (df['date'].isnull()) & 
+                            ~(df['age_group'].isnull()) & 
+                            (df['impression_hour'].isnull()) & 
+                            (df['num_total_impressions'].isnull()) & 
+                            (df['home'].isnull()))]
+
+            total_por_genero = df_genero[(df_genero['gender_group'].isin(lista_genero)) & 
+                                         (df_genero['age_group'] != 0)].groupby('gender_group')['uniques'].sum().to_dict()
+
+            # Cálculo da porcentagem por gênero
+            porcentagem_por_genero = {genero: (total / total_alcance) * 100 
+                                      for genero, total in total_por_genero.items()}
+
+            # Cálculo das somas de 'uniques' por faixa etária
+            lista_idade = [20, 30, 40, 50, 60, 70, 80]
+            df_idade = df[((df['class'].isnull()) & 
+                           (df['location_id'].isnull()) & 
+                           ~(df['gender_group'].isnull()) & 
+                           (df['country'].isnull()) & 
+                           (df['date'].isnull()) & 
+                           ~(df['age_group'].isnull()) & 
+                           (df['impression_hour'].isnull()) & 
+                           (df['num_total_impressions'].isnull()) & 
+                           (df['home'].isnull()))]
+
+            total_por_idade = df_idade[(df_idade['age_group'].isin(lista_idade)) & 
+                                       (df_idade['gender_group'] != 'U')].groupby('age_group')['uniques'].sum().to_dict()
+
+            # Cálculo da porcentagem por faixa etária
+            porcentagem_por_idade = {idade: (total / total_alcance) * 100 
+                                     for idade, total in total_por_idade.items()}
+
+            if 'impressions' in final.columns:
+                st.subheader("Estatísticas de 'impressions'")
+                impressions_describe = final['impressions'].describe()
+                st.write(f"Contagem: {impressions_describe['count']}")
+                st.write(f"Média: {impressions_describe['mean']:.2f}")
+                st.write(f"Desvio Padrão: {impressions_describe['std']:.2f}")
+                st.write(f"Mínimo: {impressions_describe['min']}")
+                st.write(f"25º Percentil: {impressions_describe['25%']}")
+                st.write(f"Mediana (50º Percentil): {impressions_describe['50%']}")
+                st.write(f"75º Percentil: {impressions_describe['75%']}")
+                st.write(f"Máximo: {impressions_describe['max']}")
+
+            if 'uniques' in final.columns:
+                st.subheader("Estatísticas de 'uniques'")
+                uniques_describe = final['uniques'].describe()
+                st.write(f"Contagem: {uniques_describe['count']}")
+                st.write(f"Média: {uniques_describe['mean']:.2f}")
+                st.write(f"Desvio Padrão: {uniques_describe['std']:.2f}")
+                st.write(f"Mínimo: {uniques_describe['min']}")
+                st.write(f"25º Percentil: {uniques_describe['25%']}")
+                st.write(f"Mediana (50º Percentil): {uniques_describe['50%']}")
+                st.write(f"75º Percentil: {uniques_describe['75%']}")
+                st.write(f"Máximo: {uniques_describe['max']}")
+
+            # Exibir porcentagens por classe
+            st.subheader("Porcentagem por Classe Social")
             for classe, porcentagem in porcentagem_por_classe.items():
                 st.write(f"{classe}: {porcentagem:.2f}%")
 
-            # Estatísticas por Gênero
+            # Exibir porcentagens por gênero
             st.subheader("Porcentagem por Gênero")
-            df_genero = df[((~df['gender_group'].isnull()) & 
-                             (df['location_id'].isnull()) & 
-                             (df['class'].isnull()) & 
-                             (df['country'].isnull()) & 
-                             (df['date'].isnull()) & 
-                             (df['age_group'].isnull()) & 
-                             (df['impression_hour'].isnull()) & 
-                             (df['num_total_impressions'].isnull()) & 
-                             (df['home'].isnull()))]
-
-            total_por_genero = df_genero.groupby('gender_group')['uniques'].sum().to_dict()
-            total_alcance_genero = df[((df['gender_group'].isnull()) & 
-                                       (df['location_id'].isnull()) & 
-                                       (df['class'].isnull()) & 
-                                       (df['country'].isnull()) & 
-                                       (df['date'].isnull()) & 
-                                       (df['age_group'].isnull()) & 
-                                       (df['impression_hour'].isnull()) & 
-                                       (df['num_total_impressions'].isnull()) & 
-                                       (df['home'].isnull()))]['uniques'].sum()
-            porcentagem_por_genero = {genero: (total / total_alcance_genero) * 100 
-                                      for genero, total in total_por_genero.items()}
             for genero, porcentagem in porcentagem_por_genero.items():
                 genero_dict = {
                     'F': 'Feminino',
@@ -213,30 +233,8 @@ if uploaded_file is not None:
                 faixa_genero = genero_dict.get(genero, genero)
                 st.write(f"{faixa_genero}: {porcentagem:.2f}%")
 
-            # Estatísticas por Faixa Etária
+            # Exibir porcentagens por faixa etária
             st.subheader("Porcentagem por Faixa Etária")
-            df_idade = df[((~df['age_group'].isnull()) & 
-                            (df['location_id'].isnull()) & 
-                            (df['class'].isnull()) & 
-                            (df['country'].isnull()) & 
-                            (df['date'].isnull()) & 
-                            (df['gender_group'].isnull()) & 
-                            (df['impression_hour'].isnull()) & 
-                            (df['num_total_impressions'].isnull()) & 
-                            (df['home'].isnull()))]
-
-            total_por_idade = df_idade.groupby('age_group')['uniques'].sum().to_dict()
-            total_alcance_idade = df[((df['age_group'].isnull()) & 
-                                      (df['location_id'].isnull()) & 
-                                      (df['class'].isnull()) & 
-                                      (df['gender_group'].isnull()) & 
-                                      (df['country'].isnull()) & 
-                                      (df['date'].isnull()) & 
-                                      (df['impression_hour'].isnull()) & 
-                                      (df['num_total_impressions'].isnull()) & 
-                                      (df['home'].isnull()))]['uniques'].sum()
-            porcentagem_por_idade = {idade: (total / total_alcance_idade) * 100 
-                                     for idade, total in total_por_idade.items()}
             faixas_etarias = {
                 '20': '20-29',
                 '30': '30-39',
@@ -251,8 +249,32 @@ if uploaded_file is not None:
                 st.write(f"{faixa}: {porcentagem:.2f}%")
 
         with tab3:
-            st.header("Composição")
-            st.write("Aqui você pode adicionar informações adicionais de composição.")
+            st.header("Cálculo de Composição")
+            selected_classes = st.multiselect(
+                "Selecione as Classes Sociais",
+                options=lista_classes
+            )
+            selected_genders = st.multiselect(
+                "Selecione os Gêneros",
+                options=lista_genero
+            )
+            selected_ages = st.multiselect(
+                "Selecione as Faixas Etárias",
+                options=[faixa for idade, faixa in faixas_etarias.items()],
+            )
+
+            # Soma das porcentagens selecionadas
+            soma_porcentagem_classes = sum(porcentagem_por_classe[classe] for classe in selected_classes)
+            soma_porcentagem_generos = sum(porcentagem_por_genero[genero] for genero, faixa_genero in genero_dict.items() if faixa_genero in selected_genders)
+            soma_porcentagem_idades = sum(porcentagem_por_idade[idade] for idade, faixa in faixas_etarias.items() if faixa in selected_ages)
+
+            # Calcular a composição final
+            composicao = (soma_porcentagem_classes * soma_porcentagem_generos * soma_porcentagem_idades) / 10000
+
+            st.write(f"Soma das Porcentagens de Classes: {soma_porcentagem_classes:.2f}%")
+            st.write(f"Soma das Porcentagens de Gêneros: {soma_porcentagem_generos:.2f}%")
+            st.write(f"Soma das Porcentagens de Faixas Etárias: {soma_porcentagem_idades:.2f}%")
+            st.write(f"Composição Final: {composicao:.2f}%")
 
     except Exception as e:
         st.error(f"Ocorreu um erro ao processar o arquivo: {e}")
