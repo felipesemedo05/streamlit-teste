@@ -253,3 +253,6 @@ if uploaded_file is not None:
         with tab3:
             st.header("Composição")
             st.write("Aqui você pode adicionar informações adicionais de composição.")
+
+    except Exception as e:
+        st.error(f"Ocorreu um erro ao processar o arquivo: {e}")
