@@ -227,17 +227,14 @@ if uploaded_file is not None:
             selected_classes = st.multiselect(
                 "Selecione as Classes Sociais",
                 options=lista_classes,
-                default=['A', 'B1', 'B2']
             )
             selected_genders = st.multiselect(
                 "Selecione os Gêneros",
                 options=lista_genero,
-                default=['F', 'M']
             )
             selected_ages = st.multiselect(
                 "Selecione as Faixas Etárias",
                 options=list(faixas_etarias.values()),
-                default=['20-29', '30-39', '40-49']
             )
 
             # Calcular a soma das porcentagens selecionadas
