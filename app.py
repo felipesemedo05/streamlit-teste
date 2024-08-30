@@ -36,7 +36,9 @@ def processar_arquivo(df, claro):
     df1['location_id'] = df1['location_id'].str.extract('([0-9]+)', expand=False)
     
     final = df1.merge(claro, on='location_id')
-    
+    # Excluir colunas totalmente vazias
+    final = final.dropna(axis=1, how='all')
+
     return final
 
 # Interface do Streamlit
@@ -93,7 +95,6 @@ if uploaded_file is not None:
         colunas_selecionadas = st.multiselect(
             "Escolha as colunas que deseja incluir no download:",
             options=colunas_preenchidas,
-            default=colunas_preenchidas
         )
 
         # Filtrar o DataFrame com base nas colunas selecionadas
