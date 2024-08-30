@@ -241,6 +241,10 @@ if uploaded_file is not None:
             # Exibir porcentagens por gênero
             st.subheader("Porcentagem por Gênero")
             for genero, porcentagem in porcentagem_por_genero.items():
+                genero_dict = {
+                    'F': 'Feminino',
+                    'M': 'Masculino'
+                }
                 st.write(f"{genero}: {porcentagem:.2f}%")
 
             # Exibir porcentagens por faixa etária
@@ -255,7 +259,7 @@ if uploaded_file is not None:
                 '70': '70-79',
                 '80': '80+'
             }
-            
+
             for idade, porcentagem in porcentagem_por_idade.items():
                 faixa = faixas_etarias.get(idade, idade)
                 st.write(f"{faixa}: {porcentagem:.2f}%")
