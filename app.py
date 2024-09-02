@@ -34,9 +34,7 @@ def processar_arquivo(df, claro):
     claro = claro[['location_id', 'latitude', 'longitude']]
     
     df1['location_id'] = df1['location_id'].astype(str)
-    #df1['location_id'] = df1['location_id'].str.extract('(\d{5})', expand=False)
-    #df1['location_id'] = df1['location_id'].str.extract('([0-9]+)', expand=False)
-    #df1['location_id'] = df1['location_id'].apply(lambda x: x if len(x) != 5 else x if pd.notna(x) and len(re.findall(r'\d{5}', x)) == 0 else re.findall(r'\d{5}', x)[0] if len(re.findall(r'\d{5}', x)) > 0 else x)
+
     # Função para processar a coluna 'location_id'
     def process_location_id(x):
         # Encontra todos os números na string
@@ -217,7 +215,7 @@ if uploaded_file is not None:
             with col3:
                 if 'impressions' in final.columns:
                     st.subheader("Estatísticas de 'impressions'")
-                    impressions_describe = final['impressions'].describe()
+                    impressions_describe = round(final['impressions'].describe(),2)
                     st.write(f"Contagem: {impressions_describe['count']}")
                     st.write(f"Média: {impressions_describe['mean']:.2f}")
                     st.write(f"Desvio Padrão: {impressions_describe['std']:.2f}")
@@ -229,7 +227,7 @@ if uploaded_file is not None:
 
                 if 'uniques' in final.columns:
                     st.subheader("Estatísticas de 'uniques'")
-                    uniques_describe = final['uniques'].describe()
+                    uniques_describe = round(final['uniques'].describe(), 2)
                     st.write(f"Contagem: {uniques_describe['count']}")
                     st.write(f"Média: {uniques_describe['mean']:.2f}")
                     st.write(f"Desvio Padrão: {uniques_describe['std']:.2f}")
