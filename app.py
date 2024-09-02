@@ -82,6 +82,22 @@ if uploaded_file is not None:
         elif uploaded_file.name.endswith('.parquet'):
             df = pd.read_parquet(uploaded_file)
         
+        # Exibindo o período das datas, se as colunas existirem
+        if 'start_date' in df.columns and 'end_date' in df.columns:
+            df['start_date'] = pd.to_datetime(df['start_date'], errors='coerce')
+            df['end_date'] = pd.to_datetime(df['end_date'], errors='coerce')
+            
+            # Verifica se existem valores não nulos
+            if not df['start_date'].dropna().empty and not df['end_date'].dropna().empty:
+                start_date = df['start_date'].dropna().iloc[0]
+                end_date = df['end_date'].dropna().iloc[0]
+                dias = (end_date - start_date).days + 1  # Adiciona 1 ao cálculo dos dias
+                periodo_info = f"Período do arquivo: {start_date.strftime('%Y-%m-%d')} até {end_date.strftime('%Y-%m-%d')} ({dias} dias)"
+            else:
+                periodo_info = "Não há datas válidas no arquivo."
+        else:
+            periodo_info = "Colunas 'start_date' e/ou 'end_date' não encontradas no arquivo."
+        
         # Processamento do arquivo
         final = processar_arquivo(df, claro)
 
@@ -144,6 +160,7 @@ if uploaded_file is not None:
 
             with col1:
                 st.write(f"Quantidade de location_id: {final['location_id'].nunique()}")
+                st.write(periodo_info)
 
                 # Cálculo das somas de 'uniques' por classe
                 lista_classes = ['A', 'B1', 'B2', 'C1', 'C2', 'DE']
