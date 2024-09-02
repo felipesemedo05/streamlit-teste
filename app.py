@@ -45,7 +45,8 @@ def processar_arquivo(df, claro):
 # Interface do Streamlit
 st.set_page_config(page_title='Processamento de Arquivo', layout='wide')
 
-st.title('Processamento de Arquivo CSV e Parquet')
+# Título
+st.title('Processamento de Análise da Claro')
 
 # Upload do arquivo CSV ou Parquet
 uploaded_file = st.file_uploader("Escolha um arquivo CSV ou Parquet para o dataset principal", type=["csv", "parquet"])
