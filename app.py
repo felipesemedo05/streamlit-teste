@@ -72,7 +72,7 @@ if uploaded_file is not None:
         colunas_preenchidas = final.columns.tolist()
 
         # Abas para Navegação
-        tab1, tab2, tab3 = st.tabs(["Ponto a Ponto", "Estatísticas Descritivas", "Composição"])
+        tab1, tab2, tab3, tab4 = st.tabs(["Ponto a Ponto", "Estatísticas Descritivas", "Composição", "Visualização Mapa"])
 
         with tab1:
             st.header("Ponto a Ponto")
@@ -277,6 +277,7 @@ if uploaded_file is not None:
             st.write(f"Soma das Porcentagens de Gêneros: {soma_porcentagem_generos:.2f}%")
             st.write(f"Soma das Porcentagens de Faixas Etárias: {soma_porcentagem_idades:.2f}%")
             st.write(f"Composição Final: {composicao:.2f}%")
-
+        with tab4:
+            st.map(final_filtrado[['location_id', 'latitude', 'longitude']])
     except Exception as e:
         st.error(f"Ocorreu um erro ao processar o arquivo: {e}")
