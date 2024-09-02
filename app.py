@@ -269,18 +269,33 @@ if uploaded_file is not None:
 
         with tab3:
             st.header("Cálculo de Composição")
+
+            # Adiciona a opção "Selecionar Todos" no início das opções de classes
+            lista_classes_com_todos = ["Selecionar Todos"] + lista_classes
             selected_classes = st.multiselect(
                 "Selecione as Classes Sociais",
-                options=lista_classes
+                options=lista_classes_com_todos
             )
+            if "Selecionar Todos" in selected_classes:
+                selected_classes = lista_classes  # Seleciona todas as classes se a opção "Selecionar Todos" estiver marcada
+
+            # Adiciona a opção "Selecionar Todos" no início das opções de gêneros
+            lista_generos_com_todos = ["Selecionar Todos"] + [faixa_genero for genero, faixa_genero in genero_dict.items()]
             selected_genders = st.multiselect(
                 "Selecione os Gêneros",
-                options=[faixa_genero for genero, faixa_genero in genero_dict.items()]
+                options=lista_generos_com_todos
             )
+            if "Selecionar Todos" in selected_genders:
+                selected_genders = [faixa_genero for genero, faixa_genero in genero_dict.items()]  # Seleciona todos os gêneros se a opção "Selecionar Todos" estiver marcada
+
+            # Adiciona a opção "Selecionar Todos" no início das opções de faixas etárias
+            lista_idades_com_todos = ["Selecionar Todos"] + [faixa for idade, faixa in faixas_etarias.items()]
             selected_ages = st.multiselect(
                 "Selecione as Faixas Etárias",
-                options=[faixa for idade, faixa in faixas_etarias.items()],
+                options=lista_idades_com_todos,
             )
+            if "Selecionar Todos" in selected_ages:
+                selected_ages = [faixa for idade, faixa in faixas_etarias.items()]  # Seleciona todas as faixas etárias se a opção "Selecionar Todos" estiver marcada
 
             # Soma das porcentagens selecionadas
             soma_porcentagem_classes = sum(porcentagem_por_classe[classe] for classe in selected_classes)
