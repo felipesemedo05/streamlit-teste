@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 import os
+import regex as re
 from datetime import datetime
 from io import BytesIO
 import openpyxl
@@ -33,9 +34,10 @@ def processar_arquivo(df, claro):
     claro = claro[['location_id', 'latitude', 'longitude']]
     
     df1['location_id'] = df1['location_id'].astype(str)
-    df1['location_id'] = df1['location_id'].str.extract('(\d{5})', expand=False)
+    #df1['location_id'] = df1['location_id'].str.extract('(\d{5})', expand=False)
     #df1['location_id'] = df1['location_id'].str.extract('([0-9]+)', expand=False)
-    
+    df1['location_id'] = df1['location_id'].apply(lambda x: x if len(x) != 5 else x if pd.notna(x) and len(re.findall(r'\d{5}', x)) == 0 else re.findall(r'\d{5}', x)[0] if len(re.findall(r'\d{5}', x)) > 0 else x)
+
     final = df1.merge(claro, on='location_id')
 
     # Excluir colunas totalmente vazias
