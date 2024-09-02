@@ -36,7 +36,22 @@ def processar_arquivo(df, claro):
     df1['location_id'] = df1['location_id'].astype(str)
     #df1['location_id'] = df1['location_id'].str.extract('(\d{5})', expand=False)
     #df1['location_id'] = df1['location_id'].str.extract('([0-9]+)', expand=False)
-    df1['location_id'] = df1['location_id'].apply(lambda x: x if len(x) != 5 else x if pd.notna(x) and len(re.findall(r'\d{5}', x)) == 0 else re.findall(r'\d{5}', x)[0] if len(re.findall(r'\d{5}', x)) > 0 else x)
+    #df1['location_id'] = df1['location_id'].apply(lambda x: x if len(x) != 5 else x if pd.notna(x) and len(re.findall(r'\d{5}', x)) == 0 else re.findall(r'\d{5}', x)[0] if len(re.findall(r'\d{5}', x)) > 0 else x)
+    # Função para processar a coluna 'location_id'
+    def process_location_id(x):
+        # Encontra todos os números na string
+        numbers = re.findall(r'\d+', x)
+        # Junta todos os números em uma única string
+        num_str = ''.join(numbers)
+        # Verifica se a string resultante tem exatamente 5 dígitos
+        if len(num_str) == 5:
+            return num_str
+        else:
+            # Se tiver menos que 5 dígitos, retorna o valor original
+            return x
+
+    # Aplica a função na coluna 'location_id'
+    df1['location_id'] = df1['location_id'].apply(process_location_id)
 
     final = df1.merge(claro, on='location_id')
 
