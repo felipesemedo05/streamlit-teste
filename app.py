@@ -33,6 +33,7 @@ def processar_arquivo(df, claro):
     claro = claro[['location_id', 'latitude', 'longitude']]
     
     df1['location_id'] = df1['location_id'].astype(str)
+    df1['location_id'] = df1['location_id'].str.extract('(\d{5})', expand=False)
     #df1['location_id'] = df1['location_id'].str.extract('([0-9]+)', expand=False)
     
     final = df1.merge(claro, on='location_id')
