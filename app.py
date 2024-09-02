@@ -80,7 +80,7 @@ if uploaded_file is not None:
             colunas_selecionadas = st.multiselect(
                 "Escolha as colunas que deseja incluir no download:",
                 options=colunas_preenchidas,
-                default=['location_id', 'impressions', 'uniques']
+                default=['location_id', 'impressions', 'uniques', 'latitude', 'longitude']
             )
 
             # Filtrar o DataFrame com base nas colunas selecionadas
@@ -281,5 +281,6 @@ if uploaded_file is not None:
             st.header('Visualização dos pontos em um Mapa')
             st.write('Para visualizar no mapa, necessita das colunas "Latitude" e "Longitude"')
             st.map(final_filtrado[['location_id', 'latitude', 'longitude']])
+            
     except Exception as e:
         st.error(f"Ocorreu um erro ao processar o arquivo: {e}")
