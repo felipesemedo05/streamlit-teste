@@ -80,7 +80,7 @@ if uploaded_file is not None:
             colunas_selecionadas = st.multiselect(
                 "Escolha as colunas que deseja incluir no download:",
                 options=colunas_preenchidas,
-                default=colunas_preenchidas
+                default=final[['location_id', 'impressions', 'uniques']]
             )
 
             # Filtrar o DataFrame com base nas colunas selecionadas
