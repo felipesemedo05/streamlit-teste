@@ -279,7 +279,7 @@ if uploaded_file is not None:
             st.write(f"Composição Final: {composicao:.2f}%")
         with tab4:
             st.header('Visualização dos pontos em um Mapa')
-            st.write('Para visualizar no mapa, necessita das colunas "Latitude" e "Longitude"')
+            st.subheader('Para visualizar no mapa, necessita das colunas "Latitude" e "Longitude"')
             st.map(final_filtrado[['location_id', 'latitude', 'longitude']])
     except Exception as e:
         st.error(f"Ocorreu um erro ao processar o arquivo: {e}")
