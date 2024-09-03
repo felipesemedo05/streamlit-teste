@@ -345,6 +345,16 @@ if uploaded_file is not None:
             st.header('Visualização dos pontos em um Mapa')
             st.write('Para visualizar no mapa, necessita das colunas "Latitude" e "Longitude"')
             st.map(final_filtrado[['location_id', 'latitude', 'longitude']])
-
+        with tab5:
+                df_data = df[((df['class'].isnull()) & 
+                                (df['location_id'].isnull()) & 
+                                (df['gender_group'].isnull()) & 
+                                (df['country'].isnull()) & 
+                                ~(df['date'].isnull()) & 
+                                (df['age_group'].isnull()) & 
+                                (df['impression_hour'].isnull()) & 
+                                (df['num_total_impressions'].isnull()) & 
+                                (df['home'].isnull()))]
+                st.dataframe(df_data)          
     except Exception as e:
         st.error(f"Ocorreu um erro ao processar o arquivo: {e}")
