@@ -346,6 +346,7 @@ if uploaded_file is not None:
             st.write('Para visualizar no mapa, necessita das colunas "Latitude" e "Longitude"')
             st.map(final_filtrado[['location_id', 'latitude', 'longitude']])
         with tab5:
+                st.header('Métricas por cada dia')
                 df_data = df[((df['class'].isnull()) & 
                                 ~(df['location_id'].isnull()) & 
                                 (df['gender_group'].isnull()) & 
@@ -358,6 +359,38 @@ if uploaded_file is not None:
                 df_data_filtrado = df_data[['location_id', 'impressions', 'uniques', 'date']]
                 df_data_filtrado['date'] = pd.to_datetime(df_data_filtrado['date'])
                 df_data_filtrado = df_data_filtrado.sort_values('date')
-                st.dataframe(df_data_filtrado)          
+                st.dataframe(df_data_filtrado)
+                # Criar buffers para arquivos
+                output_csv = BytesIO()
+                output_excel = BytesIO()
+
+                # Definir o nome do arquivo processado CSV
+                processed_filename_csv = f"{original_filename}_processado_{datetime.now().strftime('%Y-%m-%d')} por data.csv"
+
+                # Definir o nome do arquivo processado EXCEL
+                processed_filename_xlsx = f"{original_filename}_processado_{datetime.now().strftime('%Y-%m-%d')} por data.xlsx"
+
+                # Criar o CSV
+                df_data_filtrado.to_csv(output_csv, index=False)
+                output_csv.seek(0)
+
+                # Criar o Excel
+                with pd.ExcelWriter(output_excel, engine='openpyxl') as writer:
+                    df_data_filtrado.to_excel(writer, index=False, sheet_name='Dados Processados')
+                output_excel.seek(0)
+
+                st.download_button(
+                    label="📁 Baixar CSV Processado",
+                    data=output_csv,
+                    file_name=processed_filename_csv,
+                    mime="text/csv"
+                )
+
+                st.download_button(
+                    label="📁 Baixar Excel Processado",
+                    data=output_excel,
+                    file_name=processed_filename_xlsx,
+                    mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                )                       
     except Exception as e:
         st.error(f"Ocorreu um erro ao processar o arquivo: {e}")
