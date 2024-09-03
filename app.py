@@ -64,8 +64,17 @@ st.set_page_config(page_title='Processamento de Arquivo', layout='wide')
 # Título
 st.title('Processamento de Análise da Claro')
 
-# Logo da Eletromidia
-st.image("eletro.png", use_column_width=True)
+# Usar markdown para posicionar a imagem no topo à direita
+st.markdown(
+    """
+    <div style="display: flex; justify-content: flex-end;">
+        <img src="eletro.png" style="width: 100px;">
+    </div>
+    """,
+    unsafe_allow_html=True
+)
+
+# Conteúdo restant
 
 # Upload do arquivo CSV ou Parquet
 uploaded_file = st.file_uploader("Escolha um arquivo CSV ou Parquet para o dataset principal", type=["csv", "parquet"])
