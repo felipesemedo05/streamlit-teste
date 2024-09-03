@@ -5,6 +5,8 @@ import regex as re
 from datetime import datetime
 from io import BytesIO
 import openpyxl
+import matplotlib.pyplot as plt
+import seaborn as sns
 
 # Função para aplicar as transformações
 
@@ -48,19 +50,6 @@ def processar_arquivo(df, claro):
     #claro = claro[['location_id', 'latitude', 'longitude']]
     
     df1['location_id'] = df1['location_id'].astype(str)
-
-    # Função para processar a coluna 'location_id'
-    def process_location_id(x):
-        # Encontra todos os números na string
-        numbers = re.findall(r'\d+', x)
-        # Junta todos os números em uma única string
-        num_str = ''.join(numbers)
-        # Verifica se a string resultante tem exatamente 5 dígitos
-        if len(num_str) == 5:
-            return num_str
-        else:
-            # Se tiver menos que 5 dígitos, retorna o valor original
-            return x
 
     # Aplica a função na coluna 'location_id'
     df1['location_id'] = df1['location_id'].apply(process_location_id)
@@ -130,11 +119,12 @@ if uploaded_file is not None:
         colunas_padrao = ['location_id', 'impressions', 'uniques', 'latitude', 'longitude']
 
         # Abas para Navegação
-        tab1, tab2, tab3, tab4, tab5 = st.tabs(["Ponto a Ponto", 
+        tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs(["Ponto a Ponto", 
                                           "Estatísticas Descritivas", 
                                           "Composição", 
                                           "Visualização Mapa",
-                                          "Métricas por Data"])
+                                          "Métricas por Data",
+                                          "Gráficos"])
 
         with tab1:
             st.header("Ponto a Ponto")
@@ -371,12 +361,20 @@ if uploaded_file is not None:
                                 (df['impression_hour'].isnull()) & 
                                 (df['num_total_impressions'].isnull()) & 
                                 (df['home'].isnull()))]
+                
+                # Tratar o dataframe de data
                 df_data_filtrado = df_data[['location_id', 'impressions', 'uniques', 'date']]
+
+                # Transformar em data
                 df_data_filtrado['date'] = pd.to_datetime(df_data_filtrado['date'])
                 df_data_filtrado = df_data_filtrado.sort_values('date')
+
                 # Aplica a função na coluna 'location_id'
                 df_data_filtrado['location_id'] = df_data_filtrado['location_id'].apply(process_location_id)
+
+                # Mostra o dataframe
                 st.dataframe(df_data_filtrado)
+
                 # Criar buffers para arquivos
                 output_csv = BytesIO()
                 output_excel = BytesIO()
@@ -409,5 +407,49 @@ if uploaded_file is not None:
                     file_name=processed_filename_xlsx,
                     mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
                 )                       
+        with tab6:
+            fig, ax = plt.subplots()
+            classes = list(porcentagem_por_classe.keys())
+            porcentagens_classes = list(porcentagem_por_classe.values())
+            sns.barplot(x=classes, y=porcentagens_classes, ax=ax, palette="viridis")
+            ax.set_title("Porcentagem por Classe Social")
+            ax.set_xlabel("Classe Social")
+            ax.set_ylabel("Porcentagem (%)")
+            plt.xticks(rotation=45)
+            plt.tight_layout()
+            st.pyplot(fig)
+
+            # 2. Gráfico de Porcentagem por Gênero
+            fig, ax = plt.subplots()
+            generos = list(porcentagem_por_genero.keys())
+            porcentagens_generos = list(porcentagem_por_genero.values())
+            sns.barplot(x=generos, y=porcentagens_generos, ax=ax, palette="plasma")
+            ax.set_title("Porcentagem por Gênero")
+            ax.set_xlabel("Gênero")
+            ax.set_ylabel("Porcentagem (%)")
+            ax.set_xticklabels(['Feminino', 'Masculino'])
+            plt.tight_layout()
+            st.pyplot(fig)
+
+            # 3. Gráfico de Porcentagem por Faixa Etária
+            fig, ax = plt.subplots()
+            faixa_etaria = [faixas_etarias.get(idade, idade) for idade in porcentagem_por_idade.keys()]
+            porcentagens_idade = list(porcentagem_por_idade.values())
+            sns.barplot(x=faixa_etaria, y=porcentagens_idade, ax=ax, palette="magma")
+            ax.set_title("Porcentagem por Faixa Etária")
+            ax.set_xlabel("Faixa Etária")
+            ax.set_ylabel("Porcentagem (%)")
+            plt.xticks(rotation=45)
+            plt.tight_layout()
+            st.pyplot(fig)
+
+            # 4. Histograma das Estatísticas de 'uniques'
+            fig, ax = plt.subplots()
+            sns.histplot(final['uniques'].dropna(), kde=True, ax=ax, color="skyblue")
+            ax.set_title("Distribuição de 'uniques'")
+            ax.set_xlabel("'uniques'")
+            ax.set_ylabel("Frequência")
+            plt.tight_layout()
+            st.pyplot(fig)
     except Exception as e:
         st.error(f"Ocorreu um erro ao processar o arquivo: {e}")
