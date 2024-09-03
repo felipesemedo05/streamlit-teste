@@ -31,7 +31,7 @@ def processar_arquivo(df, claro):
     df1 = df1[[coluna for coluna in df.columns if coluna in colunas_para_manter]].reset_index(drop=True)
     
     claro = claro.rename(columns={'id': 'location_id'})
-    claro = claro[['location_id', 'latitude', 'longitude']]
+    #claro = claro[['location_id', 'latitude', 'longitude']]
     
     df1['location_id'] = df1['location_id'].astype(str)
 
@@ -123,7 +123,8 @@ if uploaded_file is not None:
             st.write("Seleção de Colunas para Download:")
             colunas_selecionadas = st.multiselect(
                 "Escolha as colunas que deseja incluir no download:",
-                options=colunas_preenchidas
+                options=colunas_preenchidas,
+                default=colunas_padrao
             )
 
             # Filtrar o DataFrame com base nas colunas selecionadas
