@@ -116,7 +116,11 @@ if uploaded_file is not None:
         colunas_padrao = ['location_id', 'impressions', 'uniques', 'latitude', 'longitude']
 
         # Abas para Navegação
-        tab1, tab2, tab3, tab4 = st.tabs(["Ponto a Ponto", "Estatísticas Descritivas", "Composição", "Visualização Mapa"])
+        tab1, tab2, tab3, tab4, tab5 = st.tabs(["Ponto a Ponto", 
+                                          "Estatísticas Descritivas", 
+                                          "Composição", 
+                                          "Visualização Mapa",
+                                          "Métricas por Data"])
 
         with tab1:
             st.header("Ponto a Ponto")
