@@ -306,7 +306,6 @@ if uploaded_file is not None:
                 for idade, porcentagem in porcentagem_por_idade.items():
                     faixa = faixas_etarias.get(idade, idade)
                     st.write(f"{faixa}: {porcentagem:.2f}%")
-
         with tab3:
             st.header("Cálculo de Composição")
 
@@ -439,12 +438,6 @@ if uploaded_file is not None:
                             labels={'Porcentagem': 'Porcentagem (%)'},
                             title="Distribuição de Porcentagem por Gênero")
             st.plotly_chart(fig_genero)
-
-            # Gráfico da Distribuição de 'uniques' por Frequência
-            st.subheader("Distribuição de 'uniques' por Frequência")
-            fig_uniques = px.histogram(df, x='uniques', nbins=30, title="Distribuição de 'uniques'",
-                                    labels={'uniques': "Número de 'uniques'"})
-            st.plotly_chart(fig_uniques)
 
             # Gráfico combinado de Impressions e Uniques por Data com marcadores
             st.subheader("Impressions e Uniques por Data")
