@@ -116,7 +116,7 @@ if uploaded_file is not None:
         final = processar_arquivo(df, claro)
 
         # Criar coluna frequência
-        final['frequencia'] = final['impressions']/final['uniques']
+        final['frequencia'] = round(final['impressions']/final['uniques'], 2)
 
         # Criar uma lista das colunas preenchidas (não vazias)
         colunas_preenchidas = final.columns.tolist()
@@ -125,11 +125,11 @@ if uploaded_file is not None:
 
         # Abas para Navegação
         tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs(["Ponto a Ponto", 
-                                          "Estatísticas Descritivas", 
-                                          "Composição", 
-                                          "Visualização Mapa",
-                                          "Métricas por Data",
-                                          "Gráficos"])
+                                                    "Estatísticas Descritivas", 
+                                                    "Composição", 
+                                                    "Visualização Mapa",
+                                                    "Métricas por Data",
+                                                    "Gráficos"])
 
         with tab1:
             st.header("Ponto a Ponto")
@@ -352,7 +352,7 @@ if uploaded_file is not None:
         with tab4:
             st.header('Visualização dos pontos em um Mapa')
             st.write('Para visualizar no mapa, necessita das colunas "Latitude" e "Longitude"')
-            st.map(final_filtrado[['location_id', 'latitude', 'longitude']])
+            st.map(final[['latitude', 'longitude']])
         with tab5:
                 st.header('Métricas por cada dia')
                 st.write(periodo_info)
