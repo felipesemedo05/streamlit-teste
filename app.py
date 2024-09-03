@@ -447,5 +447,31 @@ if uploaded_file is not None:
             # Ajustar layout
             plt.tight_layout()
             st.pyplot(fig)
+
+            # Crie um gráfico de linhas para cada location_id
+            plt.figure(figsize=(12, 8))
+
+            # Para cada location_id única, crie uma linha no gráfico
+            for location in df_data_filtrado['location_id'].unique():
+                subset = df_data_filtrado[df_data_filtrado['location_id'] == location]
+                plt.plot(subset['date'], subset['uniques'], label=f'Location {location}', marker='o')
+
+            # Configure o título e os rótulos dos eixos
+            plt.title('Alcance Primeira Onda')
+            plt.xlabel('Data')
+            plt.ylabel('Alcance')
+
+            # Ajuste os rótulos do eixo x para mostrar todas as datas e rotacionar para melhor legibilidade
+            plt.gca().xaxis.set_major_locator(plt.MaxNLocator(integer=True))  # Garante que todos os ticks sejam visíveis
+            plt.gcf().autofmt_xdate()  # Rotaciona os rótulos das datas para melhor visualização
+
+            # Adicione uma legenda para identificar as linhas
+            plt.legend()
+
+            # Adicione uma grade para facilitar a visualização dos dados
+            plt.grid(True)
+            
+            # Exiba o gráfico
+            plt.show()
     except Exception as e:
         st.error(f"Ocorreu um erro ao processar o arquivo: {e}")
