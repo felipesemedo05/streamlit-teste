@@ -357,7 +357,7 @@ if uploaded_file is not None:
                                 (df['num_total_impressions'].isnull()) & 
                                 (df['home'].isnull()))]
                 df_data_filtrado = df_data[['location_id', 'impressions', 'uniques', 'date']]
-                df_data_filtrado['date'] = pd.to_datetime(df_data_filtrado['date'])
+                df_data_filtrado['date'] = pd.to_datetime(df_data_filtrado['date'], format='%Y/%m/%d')
                 df_data_filtrado = df_data_filtrado.sort_values('date')
                 st.dataframe(df_data_filtrado)
                 # Criar buffers para arquivos
