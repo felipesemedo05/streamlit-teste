@@ -64,6 +64,9 @@ st.set_page_config(page_title='Processamento de Arquivo', layout='wide')
 # Título
 st.title('Processamento de Análise da Claro')
 
+# Logo da Eletromidia
+st.image("eletro.png", use_column_width=True)
+
 # Upload do arquivo CSV ou Parquet
 uploaded_file = st.file_uploader("Escolha um arquivo CSV ou Parquet para o dataset principal", type=["csv", "parquet"])
 
