@@ -408,47 +408,43 @@ if uploaded_file is not None:
                     mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
                 )                       
         with tab6:
-            fig, ax = plt.subplots()
+            # Criação de uma figura com 2 linhas e 2 colunas de subplots
+            fig, axs = plt.subplots(2, 2, figsize=(14, 10))  # Ajuste o tamanho conforme necessário
+
+            # Gráfico 1: Porcentagem por Classe Social
             classes = list(porcentagem_por_classe.keys())
             porcentagens_classes = list(porcentagem_por_classe.values())
-            sns.barplot(x=classes, y=porcentagens_classes, ax=ax, palette="viridis")
-            ax.set_title("Porcentagem por Classe Social")
-            ax.set_xlabel("Classe Social")
-            ax.set_ylabel("Porcentagem (%)")
-            plt.xticks(rotation=45)
-            plt.tight_layout()
-            st.pyplot(fig)
+            sns.barplot(x=classes, y=porcentagens_classes, ax=axs[0, 0], palette="viridis")
+            axs[0, 0].set_title("Porcentagem por Classe Social")
+            axs[0, 0].set_xlabel("Classe Social")
+            axs[0, 0].set_ylabel("Porcentagem (%)")
+            axs[0, 0].tick_params(axis='x', rotation=45)
 
-            # 2. Gráfico de Porcentagem por Gênero
-            fig, ax = plt.subplots()
+            # Gráfico 2: Porcentagem por Gênero
             generos = list(porcentagem_por_genero.keys())
             porcentagens_generos = list(porcentagem_por_genero.values())
-            sns.barplot(x=generos, y=porcentagens_generos, ax=ax, palette="plasma")
-            ax.set_title("Porcentagem por Gênero")
-            ax.set_xlabel("Gênero")
-            ax.set_ylabel("Porcentagem (%)")
-            ax.set_xticklabels(['Feminino', 'Masculino'])
-            plt.tight_layout()
-            st.pyplot(fig)
+            sns.barplot(x=generos, y=porcentagens_generos, ax=axs[0, 1], palette="plasma")
+            axs[0, 1].set_title("Porcentagem por Gênero")
+            axs[0, 1].set_xlabel("Gênero")
+            axs[0, 1].set_ylabel("Porcentagem (%)")
+            axs[0, 1].set_xticklabels(['Feminino', 'Masculino'])
 
-            # 3. Gráfico de Porcentagem por Faixa Etária
-            fig, ax = plt.subplots()
+            # Gráfico 3: Porcentagem por Faixa Etária
             faixa_etaria = [faixas_etarias.get(idade, idade) for idade in porcentagem_por_idade.keys()]
             porcentagens_idade = list(porcentagem_por_idade.values())
-            sns.barplot(x=faixa_etaria, y=porcentagens_idade, ax=ax, palette="magma")
-            ax.set_title("Porcentagem por Faixa Etária")
-            ax.set_xlabel("Faixa Etária")
-            ax.set_ylabel("Porcentagem (%)")
-            plt.xticks(rotation=45)
-            plt.tight_layout()
-            st.pyplot(fig)
+            sns.barplot(x=faixa_etaria, y=porcentagens_idade, ax=axs[1, 0], palette="magma")
+            axs[1, 0].set_title("Porcentagem por Faixa Etária")
+            axs[1, 0].set_xlabel("Faixa Etária")
+            axs[1, 0].set_ylabel("Porcentagem (%)")
+            axs[1, 0].tick_params(axis='x', rotation=45)
 
-            # 4. Histograma das Estatísticas de 'uniques'
-            fig, ax = plt.subplots()
-            sns.histplot(final['uniques'].dropna(), kde=True, ax=ax, color="skyblue")
-            ax.set_title("Distribuição de 'uniques'")
-            ax.set_xlabel("'uniques'")
-            ax.set_ylabel("Frequência")
+            # Gráfico 4: Histograma das Estatísticas de 'uniques'
+            sns.histplot(final['uniques'].dropna(), kde=True, ax=axs[1, 1], color="skyblue")
+            axs[1, 1].set_title("Distribuição de 'uniques'")
+            axs[1, 1].set_xlabel("'uniques'")
+            axs[1, 1].set_ylabel("Frequência")
+
+            # Ajustar layout
             plt.tight_layout()
             st.pyplot(fig)
     except Exception as e:
