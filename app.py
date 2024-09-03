@@ -7,6 +7,20 @@ from io import BytesIO
 import openpyxl
 
 # Função para aplicar as transformações
+
+# Função para processar a coluna 'location_id'
+def process_location_id(x):
+    # Encontra todos os números na string
+    numbers = re.findall(r'\d+', x)
+    # Junta todos os números em uma única string
+    num_str = ''.join(numbers)
+    # Verifica se a string resultante tem exatamente 5 dígitos
+    if len(num_str) == 5:
+        return num_str
+    else:
+        # Se tiver menos que 5 dígitos, retorna o valor original
+        return x
+        
 def processar_arquivo(df, claro):
     colunas_para_manter = ['location_id', 'impressions', 'uniques']
 
@@ -360,6 +374,8 @@ if uploaded_file is not None:
                 df_data_filtrado = df_data[['location_id', 'impressions', 'uniques', 'date']]
                 df_data_filtrado['date'] = pd.to_datetime(df_data_filtrado['date'])
                 df_data_filtrado = df_data_filtrado.sort_values('date')
+                # Aplica a função na coluna 'location_id'
+                df_data_filtrado['location_id'] = df_data_filtrado['location_id'].apply(process_location_id)
                 st.dataframe(df_data_filtrado)
                 # Criar buffers para arquivos
                 output_csv = BytesIO()
