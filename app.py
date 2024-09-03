@@ -357,6 +357,7 @@ if uploaded_file is not None:
                                 (df['home'].isnull()))]
                 df_data_filtrado = df_data[['location_id', 'impressions', 'uniques', 'date']]
                 df_data_filtrado['date'] = pd.to_datetime(df_data_filtrado['date'])
+                df_data_filtrado = df_data_filtrado.sort_values('date')
                 st.dataframe(df_data_filtrado)          
     except Exception as e:
         st.error(f"Ocorreu um erro ao processar o arquivo: {e}")
