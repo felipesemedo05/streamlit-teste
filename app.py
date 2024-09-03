@@ -64,15 +64,7 @@ st.set_page_config(page_title='Processamento de Arquivo', layout='wide')
 # Título
 st.title('Processamento de Análise da Claro')
 
-# Usar markdown para posicionar a imagem no topo à direita
-st.markdown(
-    """
-    <div style="display: flex; justify-content: flex-end;">
-        <img src="eletro.png" style="width: 100px;">
-    </div>
-    """,
-    unsafe_allow_html=True
-)
+st.image("eletro.png", width=300)
 
 # Conteúdo restant
 
