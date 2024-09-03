@@ -123,8 +123,7 @@ if uploaded_file is not None:
             st.write("Seleção de Colunas para Download:")
             colunas_selecionadas = st.multiselect(
                 "Escolha as colunas que deseja incluir no download:",
-                options=colunas_preenchidas,
-                default=colunas_preenchidas
+                options=colunas_preenchidas
             )
 
             # Filtrar o DataFrame com base nas colunas selecionadas
