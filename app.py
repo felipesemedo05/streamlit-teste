@@ -66,7 +66,7 @@ st.set_page_config(page_title='Processamento de Arquivo', layout='wide')
 
 col1, col2, col3 = st.columns([4, 1, 1])
 with col3:
-    st.image("eletro.png", width=150)
+    st.image("eletro.png", width=250)
 
 with col1:
     st.title('Processamento de Análise da Claro')
