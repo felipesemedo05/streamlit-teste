@@ -347,7 +347,7 @@ if uploaded_file is not None:
             st.map(final_filtrado[['location_id', 'latitude', 'longitude']])
         with tab5:
                 df_data = df[((df['class'].isnull()) & 
-                                (df['location_id'].isnull()) & 
+                                ~(df['location_id'].isnull()) & 
                                 (df['gender_group'].isnull()) & 
                                 (df['country'].isnull()) & 
                                 ~(df['date'].isnull()) & 
@@ -355,6 +355,7 @@ if uploaded_file is not None:
                                 (df['impression_hour'].isnull()) & 
                                 (df['num_total_impressions'].isnull()) & 
                                 (df['home'].isnull()))]
+                #df_data_filtrado = df_data[[m]]
                 st.dataframe(df_data)          
     except Exception as e:
         st.error(f"Ocorreu um erro ao processar o arquivo: {e}")
