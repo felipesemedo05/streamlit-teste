@@ -113,6 +113,8 @@ if uploaded_file is not None:
         # Criar uma lista das colunas preenchidas (não vazias)
         colunas_preenchidas = final.columns.tolist()
 
+        colunas_padrao = ['location_id', 'impressions', 'uniques', 'latitude', 'longitude']
+
         # Abas para Navegação
         tab1, tab2, tab3, tab4 = st.tabs(["Ponto a Ponto", "Estatísticas Descritivas", "Composição", "Visualização Mapa"])
 
@@ -122,7 +124,7 @@ if uploaded_file is not None:
             colunas_selecionadas = st.multiselect(
                 "Escolha as colunas que deseja incluir no download:",
                 options=colunas_preenchidas,
-                default=final['location_id', 'impressions', 'uniques', 'latitude', 'longitude']
+                default=colunas_preenchidas
             )
 
             # Filtrar o DataFrame com base nas colunas selecionadas
