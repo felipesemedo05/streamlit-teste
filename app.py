@@ -411,37 +411,54 @@ if uploaded_file is not None:
                     mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
                 )                       
         with tab6:
+            # Supondo que os dados já estejam carregados e processados, como mostrado anteriormente.
             st.header("Gráficos")
 
+            # Criação de colunas para exibir gráficos lado a lado
+            col1, col2 = st.columns(2)
+
             # Gráfico de Classe Social
-            st.subheader("Distribuição por Classe Social")
-            classe_df = pd.DataFrame(list(porcentagem_por_classe.items()), columns=['Classe Social', 'Porcentagem'])
-            fig_classe = px.bar(classe_df, x='Classe Social', y='Porcentagem',
-                            labels={'Porcentagem': 'Porcentagem (%)'},
-                            title="Distribuição de Porcentagem por Classe Social")
-            st.plotly_chart(fig_classe)
+            with col1:
+                st.subheader("Distribuição por Classe Social")
+                classe_df = pd.DataFrame(list(porcentagem_por_classe.items()), columns=['Classe Social', 'Porcentagem'])
+                fig_classe = px.bar(classe_df, x='Classe Social', y='Porcentagem',
+                                labels={'Porcentagem': 'Porcentagem (%)'},
+                                title="Distribuição de Porcentagem por Classe Social")
+                fig_classe.update_layout(height=300, width=400)  # Ajusta o tamanho do gráfico
+                st.plotly_chart(fig_classe, use_container_width=True)
 
             # Gráfico de Faixa Etária
-            st.subheader("Distribuição por Faixa Etária")
-            idade_df = pd.DataFrame(list(porcentagem_por_idade.items()), columns=['Faixa Etária', 'Porcentagem'])
-            idade_df['Faixa Etária'] = idade_df['Faixa Etária'].map(faixas_etarias)
-            fig_idade = px.bar(idade_df, x='Faixa Etária', y='Porcentagem',
-                            labels={'Porcentagem': 'Porcentagem (%)'},
-                            title="Distribuição de Porcentagem por Faixa Etária")
-            st.plotly_chart(fig_idade)
+            with col1:
+                st.subheader("Distribuição por Faixa Etária")
+                idade_df = pd.DataFrame(list(porcentagem_por_idade.items()), columns=['Faixa Etária', 'Porcentagem'])
+                idade_df['Faixa Etária'] = idade_df['Faixa Etária'].map(faixas_etarias)
+                fig_idade = px.bar(idade_df, x='Faixa Etária', y='Porcentagem',
+                                labels={'Porcentagem': 'Porcentagem (%)'},
+                                title="Distribuição de Porcentagem por Faixa Etária")
+                fig_idade.update_layout(height=300, width=400)  # Ajusta o tamanho do gráfico
+                st.plotly_chart(fig_idade, use_container_width=True)
 
-            # Gráfico de Gênero
-            st.subheader("Distribuição por Gênero")
-            genero_df = pd.DataFrame(list(porcentagem_por_genero.items()), columns=['Gênero', 'Porcentagem'])
-            genero_df['Gênero'] = genero_df['Gênero'].map({'F': 'Feminino', 'M': 'Masculino'})
-            fig_genero = px.bar(genero_df, x='Gênero', y='Porcentagem',
-                            labels={'Porcentagem': 'Porcentagem (%)'},
-                            title="Distribuição de Porcentagem por Gênero")
-            st.plotly_chart(fig_genero)
+            # Gráfico de Gênero como pizza
+            with col2:
+                st.subheader("Distribuição por Gênero")
+                genero_df = pd.DataFrame(list(porcentagem_por_genero.items()), columns=['Gênero', 'Porcentagem'])
+                genero_df['Gênero'] = genero_df['Gênero'].map({'F': 'Feminino', 'M': 'Masculino'})
+                fig_genero = px.pie(genero_df, names='Gênero', values='Porcentagem',
+                                title="Distribuição de Porcentagem por Gênero",
+                                labels={'Porcentagem': 'Porcentagem (%)'})
+                fig_genero.update_layout(height=300, width=400)  # Ajusta o tamanho do gráfico
+                st.plotly_chart(fig_genero, use_container_width=True)
+
+            # Gráfico da Distribuição de 'uniques' por Frequência
+            with col2:
+                st.subheader("Distribuição de 'uniques' por Frequência")
+                fig_uniques = px.histogram(df, x='uniques', nbins=30, title="Distribuição de 'uniques'",
+                                        labels={'uniques': "Número de 'uniques'"})
+                fig_uniques.update_layout(height=300, width=400)  # Ajusta o tamanho do gráfico
+                st.plotly_chart(fig_uniques, use_container_width=True)
 
             # Gráfico combinado de Impressions e Uniques por Data com marcadores
             st.subheader("Impressions e Uniques por Data")
-            
             df_impressions = df_data_filtrado.groupby('date')['impressions'].sum().reset_index()
             df_uniques = df_data_filtrado.groupby('date')['uniques'].sum().reset_index()
             
@@ -465,8 +482,9 @@ if uploaded_file is not None:
                                     xaxis_title="Data",
                                     yaxis_title="Valores",
                                     legend_title="Legenda",
-                                    template='plotly_white')
+                                    template='plotly_white',
+                                    height=400, width=800)  # Ajusta o tamanho do gráfico
 
-            st.plotly_chart(fig_combined)
+            st.plotly_chart(fig_combined, use_container_width=True)
     except Exception as e:
         st.error(f"Ocorreu um erro ao processar o arquivo: {e}")
