@@ -62,11 +62,14 @@ def processar_arquivo(df, claro):
 st.set_page_config(page_title='Processamento de Arquivo', layout='wide')
 
 # Título
-st.title('Processamento de Análise da Claro')
+#st.title('Processamento de Análise da Claro')
 
 col1, col2, col3 = st.columns([4, 1, 1])
 with col3:
     st.image("eletro.png", width=300)
+
+with col1:
+    st.title('Processamento de Análise da Claro')
 
 # Conteúdo restant
 
