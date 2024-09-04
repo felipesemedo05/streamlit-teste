@@ -124,9 +124,8 @@ if uploaded_file is not None:
         colunas_padrao = ['location_id', 'impressions', 'uniques']
 
         # Abas para Navegação
-        tab1, tab2, tab3, tab4, tab5, tab6, tab7 = st.tabs(["Ponto a Ponto", 
-                                                    "Estatísticas Descritivas", 
-                                                    "Composição", 
+        tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs(["Ponto a Ponto", 
+                                                    "Estatísticas Descritivas",
                                                     "Visualização Mapa",
                                                     "Métricas por Data",
                                                     "Gráficos",
@@ -318,52 +317,10 @@ if uploaded_file is not None:
                     faixa = faixas_etarias.get(idade, idade)
                     st.write(f"{faixa}: {porcentagem:.2f}%")
         with tab3:
-            st.header("Cálculo de Composição")
-
-            # Adiciona a opção "Selecionar Todos" no início das opções de classes
-            lista_classes_com_todos = ["Selecionar Todos"] + lista_classes
-            selected_classes = st.multiselect(
-                "Selecione as Classes Sociais",
-                options=lista_classes_com_todos
-            )
-            if "Selecionar Todos" in selected_classes:
-                selected_classes = lista_classes  # Seleciona todas as classes se a opção "Selecionar Todos" estiver marcada
-
-            # Adiciona a opção "Selecionar Todos" no início das opções de gêneros
-            lista_generos_com_todos = ["Selecionar Todos"] + [faixa_genero for genero, faixa_genero in genero_dict.items()]
-            selected_genders = st.multiselect(
-                "Selecione os Gêneros",
-                options=lista_generos_com_todos
-            )
-            if "Selecionar Todos" in selected_genders:
-                selected_genders = [faixa_genero for genero, faixa_genero in genero_dict.items()]  # Seleciona todos os gêneros se a opção "Selecionar Todos" estiver marcada
-
-            # Adiciona a opção "Selecionar Todos" no início das opções de faixas etárias
-            lista_idades_com_todos = ["Selecionar Todos"] + [faixa for idade, faixa in faixas_etarias.items()]
-            selected_ages = st.multiselect(
-                "Selecione as Faixas Etárias",
-                options=lista_idades_com_todos,
-            )
-            if "Selecionar Todos" in selected_ages:
-                selected_ages = [faixa for idade, faixa in faixas_etarias.items()]  # Seleciona todas as faixas etárias se a opção "Selecionar Todos" estiver marcada
-
-            # Soma das porcentagens selecionadas
-            soma_porcentagem_classes = sum(porcentagem_por_classe[classe] for classe in selected_classes)
-            soma_porcentagem_generos = sum(porcentagem_por_genero[genero] for genero, faixa_genero in genero_dict.items() if faixa_genero in selected_genders)
-            soma_porcentagem_idades = sum(porcentagem_por_idade[idade] for idade, faixa in faixas_etarias.items() if faixa in selected_ages)
-
-            # Calcular a composição final
-            composicao = (soma_porcentagem_classes * soma_porcentagem_generos * soma_porcentagem_idades) / 10000
-
-            st.write(f"Soma das Porcentagens de Classes: {soma_porcentagem_classes:.2f}%")
-            st.write(f"Soma das Porcentagens de Gêneros: {soma_porcentagem_generos:.2f}%")
-            st.write(f"Soma das Porcentagens de Faixas Etárias: {soma_porcentagem_idades:.2f}%")
-            st.write(f"Composição Final: {composicao:.2f}%")
-        with tab4:
             st.header('Visualização dos pontos em um Mapa')
             st.write('Para visualizar no mapa, necessita das colunas "Latitude" e "Longitude"')
             st.map(final[['latitude', 'longitude']])
-        with tab5:
+        with tab4:
                 st.header('Métricas por cada dia')
                 st.write(periodo_info)
                 df_data = df[((df['class'].isnull()) & 
@@ -421,7 +378,7 @@ if uploaded_file is not None:
                     file_name=processed_filename_xlsx,
                     mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
                 )                       
-        with tab6:
+        with tab5:
             # Supondo que os dados já estejam carregados e processados, como mostrado anteriormente.
             st.header("Gráficos")
 
@@ -497,7 +454,7 @@ if uploaded_file is not None:
                                     height=400, width=800)  # Ajusta o tamanho do gráfico
 
             st.plotly_chart(fig_combined, use_container_width=True)
-        with tab7:
+        with tab6:
             st.header('Métricas Totais')
             st.subheader('Alcance')
             st.write(f'{total_alcance}')
