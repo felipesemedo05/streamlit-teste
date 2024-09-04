@@ -500,8 +500,8 @@ if uploaded_file is not None:
         with tab7:
             st.header('Métricas Totais')
             st.subheader('Alcance')
-            st.write(total_alcance)
+            st.write(f'{total_alcance}')
             st.subheader('Impactos')
-            st.write(total_impactos)
+            st.write(f'{total_impactos}')
     except Exception as e:
         st.error(f"Ocorreu um erro ao processar o arquivo: {e}")
