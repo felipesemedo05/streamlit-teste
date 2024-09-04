@@ -124,12 +124,13 @@ if uploaded_file is not None:
         colunas_padrao = ['location_id', 'impressions', 'uniques']
 
         # Abas para Navegação
-        tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs(["Ponto a Ponto", 
+        tab1, tab2, tab3, tab4, tab5, tab6, tab7 = st.tabs(["Ponto a Ponto", 
                                                     "Estatísticas Descritivas", 
                                                     "Composição", 
                                                     "Visualização Mapa",
                                                     "Métricas por Data",
-                                                    "Gráficos"])
+                                                    "Gráficos",
+                                                    "Métricas Totais"])
 
         with tab1:
             st.header("Ponto a Ponto")
@@ -209,6 +210,16 @@ if uploaded_file is not None:
                                     (df['impression_hour'].isnull()) & 
                                     (df['num_total_impressions'].isnull()) & 
                                     (df['home'].isnull()))]['uniques'].sum()
+                # Cálculo do total de alcance
+                total_impactos = df[((df['class'].isnull()) & 
+                                    (df['location_id'].isnull()) & 
+                                    (df['gender_group'].isnull()) & 
+                                    (df['country'].isnull()) & 
+                                    (df['date'].isnull()) & 
+                                    (df['age_group'].isnull()) & 
+                                    (df['impression_hour'].isnull()) & 
+                                    (df['num_total_impressions'].isnull()) & 
+                                    (df['home'].isnull()))]['impressions'].sum()
 
                 # Cálculo da porcentagem por classe
                 porcentagem_por_classe = {classe: (total / total_alcance) * 100 
@@ -486,5 +497,11 @@ if uploaded_file is not None:
                                     height=400, width=800)  # Ajusta o tamanho do gráfico
 
             st.plotly_chart(fig_combined, use_container_width=True)
+        with tab7:
+            st.header('Métricas Totais')
+            st.subheader('Alcance')
+            st.write(total_alcance)
+            st.subheader('Impactos')
+            st.write(total_impactos)
     except Exception as e:
         st.error(f"Ocorreu um erro ao processar o arquivo: {e}")
