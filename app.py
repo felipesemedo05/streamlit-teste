@@ -29,7 +29,7 @@ def processar_arquivo(df, claro):
     colunas_para_manter = ['location_id', 'impressions', 'uniques']
 
     # Verifica se as colunas padrão existem
-    colunas_esperadas = ['class', 'location_id', 'gender_group', 'country', 'date', 'age_group', 'impression_hour', 'num_total_impressions', 'home']
+    colunas_esperadas = ['social_class', 'gender', 'nationality', 'age', 'residence_name', 'class', 'location_id', 'gender_group', 'country', 'date', 'age_group', 'impression_hour', 'num_total_impressions', 'home']
     
     if all(coluna in df.columns for coluna in colunas_esperadas):
         df1 = df[((df['class'].isnull()) & (~df['location_id'].isnull()) & 
