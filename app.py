@@ -46,7 +46,7 @@ def processar_arquivo(df, claro):
                   (df['residence_name'].isnull()))]
 
     df1 = df1.sort_values('impressions', ascending=False)
-    #df1 = df1[[coluna for coluna in df.columns if coluna in colunas_para_manter]].reset_index(drop=True)
+    df1 = df1[[coluna for coluna in df.columns if coluna in colunas_para_manter]].reset_index(drop=True)
     
     claro = claro.rename(columns={'id': 'location_id'})
     #claro = claro[['location_id', 'latitude', 'longitude']]
