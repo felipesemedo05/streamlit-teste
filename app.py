@@ -29,7 +29,8 @@ def processar_arquivo(df, claro):
     colunas_para_manter = ['location_id', 'impressions', 'uniques']
 
     # Verifica se as colunas padrão existem
-    colunas_esperadas = ['social_class', 'gender', 'nationality', 'age', 'residence_name', 'class', 'location_id', 'gender_group', 'country', 'date', 'age_group', 'impression_hour', 'num_total_impressions', 'home']
+    colunas_esperadas = ['class', 'location_id', 'gender_group', 'country', 'date', 'age_group', 'impressions_hour', 'num_total_impressions', 'home']
+    colunas_esperadas_2 = ['social_class', 'location_id', 'gender', 'nationality', 'date', 'age', 'impressions_hour', 'num_total_impressions', 'residence_name']
     
     if all(coluna in df.columns for coluna in colunas_esperadas):
         df1 = df[((df['class'].isnull()) & (~df['location_id'].isnull()) & 
@@ -37,13 +38,15 @@ def processar_arquivo(df, claro):
                   (df['date'].isnull()) & (df['age_group'].isnull()) & 
                   (df['impression_hour'].isnull()) & (df['num_total_impressions'].isnull()) & 
                   (df['home'].isnull()))]
-    else:
+    elif all(coluna in df.columns for coluna in colunas_esperadas_2):
         # Executa o código alternativo com nomes de colunas diferentes
         df1 = df[((df['social_class'].isnull()) & (~df['location_id'].isnull()) & 
                   (df['gender'].isnull()) & (df['nationality'].isnull()) & 
                   (df['date'].isnull()) & (df['age'].isnull()) & 
                   (df['impression_hour'].isnull()) & (df['num_total_impressions'].isnull()) & 
                   (df['residence_name'].isnull()))]
+    else:
+        st.write("As colunas fornecidas não correspondem a nenhuma das listas esperadas.")
 
     df1 = df1.sort_values('impressions', ascending=False)
     df1 = df1[[coluna for coluna in df.columns if coluna in colunas_para_manter]].reset_index(drop=True)
