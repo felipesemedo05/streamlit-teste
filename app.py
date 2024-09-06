@@ -285,6 +285,11 @@ if uploaded_file is not None:
                     st.write(f"75º Percentil: {uniques_describe['75%']}")
                     st.write(f"Máximo: {uniques_describe['max']}")
             with col4:
+                st.subheader('Alcance')
+                st.write(f'{total_alcance}')
+                st.subheader('Impactos')
+                st.write(f'{total_impactos}')
+            
                 # Exibir porcentagens por classe
                 st.subheader("Porcentagem por Classe Social")
                 for classe, porcentagem in porcentagem_por_classe.items():
