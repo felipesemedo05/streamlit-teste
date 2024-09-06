@@ -124,12 +124,11 @@ if uploaded_file is not None:
         colunas_padrao = ['location_id', 'impressions', 'uniques']
 
         # Abas para Navegação
-        tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs(["Ponto a Ponto", 
+        tab1, tab2, tab3, tab4, tab5 = st.tabs(["Ponto a Ponto", 
                                                     "Estatísticas Descritivas",
                                                     "Visualização Mapa",
                                                     "Métricas por Data",
-                                                    "Gráficos",
-                                                    "Métricas Totais"])
+                                                    "Gráficos"])
 
         with tab1:
             st.header("Ponto a Ponto")
@@ -457,11 +456,5 @@ if uploaded_file is not None:
                                     height=400, width=800)  # Ajusta o tamanho do gráfico
 
             st.plotly_chart(fig_combined, use_container_width=True)
-        with tab6:
-            st.header('Métricas Totais')
-            st.subheader('Alcance')
-            st.write(f'{total_alcance}')
-            st.subheader('Impactos')
-            st.write(f'{total_impactos}')
     except Exception as e:
         st.error(f"Ocorreu um erro ao processar o arquivo: {e}")
