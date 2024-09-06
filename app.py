@@ -256,8 +256,7 @@ if uploaded_file is not None:
                             (df['num_total_impressions'].isnull()) & 
                             (df['home'].isnull()))]
 
-                total_por_idade = df_idade[(df_idade['age_group'].isin(lista_idade)) & 
-                                        (df_idade['gender_group'] != 'U')].groupby('age_group')['uniques'].sum().to_dict()
+                total_por_idade = df_idade[(df_idade['age_group'].isin(lista_idade))].groupby('age_group')['uniques'].sum().to_dict()
 
                 # Cálculo da porcentagem por faixa etária
                 porcentagem_por_idade = {idade: (total / total_alcance) * 100 
