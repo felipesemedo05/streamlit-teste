@@ -505,30 +505,22 @@ if uploaded_file is not None:
                                 st.subheader("Filtros")
                                 
                                 # Filtro por idade
-                                if st.checkbox("Selecionar todas as idades"):
-                                    age_filter = todas_idades
-                                else:
-                                    age_filter = st.multiselect("Selecione as idades", options=todas_idades)
+                                age_filter = st.multiselect("Selecione as idades", options=todas_idades, default=['18-19', '20-29', '30-39', '40-49'])
+                                if 'Todos' in age_filter:
+                                    age_filter = todas_idades[1:]  # Exclui o 'Todos' da lista
 
                                 # Filtro por gênero
-                                if st.checkbox("Selecionar todos os gêneros"):
-                                    gender_filter = todos_generos
-                                else:
-                                    gender_filter = st.selectbox("Selecione o gênero", options=['F', 'M', 'Todos'])
-                                    if gender_filter == 'Todos':
-                                        gender_filter = todos_generos
+                                gender_filter = st.multiselect("Selecione o gênero", options=todos_generos, default='F')
+                                if 'Todos' in gender_filter:
+                                    gender_filter = todos_generos[1:]  # Exclui o 'Todos' da lista
 
                                 # Filtro por classe social
-                                if st.checkbox("Selecionar todas as classes sociais"):
-                                    class_filter = todas_classes
-                                else:
-                                    class_filter = st.multiselect("Selecione as classes sociais", options=todas_classes)
+                                class_filter = st.multiselect("Selecione as classes sociais", options=todas_classes, default=['A', 'B1', 'B2', 'C1', 'C2'])
+                                if 'Todos' in class_filter:
+                                    class_filter = todas_classes[1:]  # Exclui o 'Todos' da lista
 
                                 # Aplicando os filtros
-                                if 'Todos' not in gender_filter:
-                                    df_filtered = df[(df['age'].isin(age_filter)) & (df['gender'].isin(gender_filter))]
-                                else:
-                                    df_filtered = df[df['age'].isin(age_filter)]
+                                df_filtered = df[(df['age'].isin(age_filter)) & (df['gender'].isin(gender_filter))]
 
                                 total_idades = df_filtered.uniques.sum()
                                 total_genero = df[~(df['gender'] == 'U') & (df['age'] != 'Unknown')].uniques.sum()
@@ -541,9 +533,14 @@ if uploaded_file is not None:
                                 # Classe social
                                 data_class = response['data']['uniques_by_social_class']['data']
                                 df_classe = pd.DataFrame(data_class)
-                                total_classes = df_classe[df_classe['social_class'].isin(todas_classes)].uniques.sum()
+                                total_classes = df_classe[df_classe['social_class'].isin(todas_classes[1:])].uniques.sum()  # Exclui 'Todos'
                                 total_filtro_classes = df_classe[df_classe['social_class'].isin(class_filter)].uniques.sum()
                                 final_classes = total_filtro_classes / total_classes
+
+                                # Cálculo final
+                                comp = final_genero * final_idade * final_classes
+                                alcance_target = comp * alcance_geral
+                                impactos_target = comp * impactos
 
                                 # Cálculo final
                                 comp = final_genero * final_idade * final_classes
