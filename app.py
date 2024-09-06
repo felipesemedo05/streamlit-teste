@@ -497,8 +497,8 @@ if uploaded_file is not None:
                                 st.write(f"Alcance Geral: {round(alcance_geral)}")
 
                                 # Opções de filtros
-                                todas_idades = ['18-19', '20-29', '30-39', '40-49', '50-59', '60-69', '70-79', '80+']
-                                todos_generos = ['F', 'M']
+                                todas_idades = ['Todos', '18-19', '20-29', '30-39', '40-49', '50-59', '60-69', '70-79', '80+']
+                                todos_generos = ['AS', 'F', 'M']
                                 todas_classes = ['A', 'B1', 'B2', 'C1', 'C2', 'DE']
 
                                 # Filtros dinâmicos com a opção de "Selecionar Todos"
@@ -511,7 +511,7 @@ if uploaded_file is not None:
 
                                 # Filtro por gênero
                                 gender_filter = st.multiselect("Selecione o gênero", options=todos_generos)
-                                if 'Todos' in gender_filter:
+                                if 'AS' in gender_filter:
                                     gender_filter = todos_generos[1:]  # Exclui o 'Todos' da lista
 
                                 # Filtro por classe social
