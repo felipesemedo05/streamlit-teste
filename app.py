@@ -552,7 +552,7 @@ if uploaded_file is not None:
 
                                 # Exibir resultados finais
                                 st.subheader("Resultados Finais")
-                                st.wrtie(f"Composicao: {round(comp, 2)}")
+                                st.write(f"Composicao: {round(comp, 2)}")
                                 st.write(f"Alcance Target: {round(alcance_target)}")
                                 st.write(f"Impactos Target: {round(impactos_target)}")
 
