@@ -468,7 +468,7 @@ if uploaded_file is not None:
 
                 # Entrada de dicionário
                 st.subheader("Cole o dicionário Python:")
-                dict_input = st.text_area("Cole aqui o dicionário", height=300)
+                dict_input = st.text_area("Cole aqui o dicionário", height=100)
 
                 # Verifica se o dicionário foi fornecido
                 if dict_input:
@@ -493,9 +493,8 @@ if uploaded_file is not None:
 
                                 # Exibir os dados extraídos
                                 st.subheader("Dados Extraídos:")
-                                st.write("Impactos:", impactos)
-                                st.write("Alcance Geral:", alcance_geral)
-                                st.dataframe(df)
+                                st.write(f"Impactos: {round(impactos)}")
+                                st.write(f"Alcance: {round(alcance_geral)}")
 
                                 # Filtros dinâmicos
                                 st.subheader("Filtros")
@@ -531,8 +530,9 @@ if uploaded_file is not None:
 
                                 # Exibir resultados finais
                                 st.subheader("Resultados Finais")
-                                st.write("Alcance Target:", alcance_target)
-                                st.write("Impactos Target:", impactos_target)
+                                st.write(f"Composicao: {round(comp, 2)}")
+                                st.write(f"Alcance Target: {round(alcance_target)}")
+                                st.write(f"Impactos Target: {round(impactos_target)}")
 
                             except KeyError as e:
                                 st.error(f"Erro ao processar o dicionário: chave ausente {e}")
