@@ -125,11 +125,12 @@ if uploaded_file is not None:
         colunas_padrao = ['location_id', 'impressions', 'uniques']
 
         # Abas para Navegação
-        tab1, tab2, tab3, tab4, tab5 = st.tabs(["Ponto a Ponto", 
+        tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs(["Ponto a Ponto", 
                                                     "Estatísticas Descritivas",
                                                     "Visualização Mapa",
                                                     "Métricas por Data",
-                                                    "Gráficos"])
+                                                    "Gráficos",
+                                                    "Tratamento JSON"])
 
         with tab1:
             st.header("Ponto a Ponto")
@@ -457,5 +458,78 @@ if uploaded_file is not None:
                                     height=400, width=800)  # Ajusta o tamanho do gráfico
 
             st.plotly_chart(fig_combined, use_container_width=True)
+        with tab6:
+            # Função principal
+            def main():
+                st.title("Processador de JSON para Impactos e Alcance")
+
+                # Entrada de JSON
+                st.subheader("Cole o dicionário JSON:")
+                json_input = st.text_area("Cole aqui o JSON", height=300)
+                
+                # Verifica se o JSON foi fornecido
+                if json_input:
+                    try:
+                        response = json.loads(json_input)
+
+                        # Extração de dados do JSON
+                        try:
+                            impactos = response['data']['impressions']['data'][0]['total_trips']
+                            alcance_geral = response['data']['unique_devices']['data'][0]['uniques']
+                            data = response['data']['uniques_by_age_and_gender']['data']
+                            df = pd.DataFrame(data)
+
+                            # Exibir os dados extraídos
+                            st.subheader("Dados Extraídos:")
+                            st.write("Impactos:", impactos)
+                            st.write("Alcance Geral:", alcance_geral)
+                            st.dataframe(df)
+
+                            # Filtros dinâmicos
+                            st.subheader("Filtros")
+                            age_filter = st.multiselect("Selecione as idades", options=['18-19', '20-29', '30-39', '40-49', '50-59', '60-69', '70-79', '80+'], default=['18-19', '20-29', '30-39', '40-49'])
+                            gender_filter = st.selectbox("Selecione o gênero", options=['F', 'M', 'Todos'])
+                            class_filter = st.multiselect("Selecione as classes sociais", options=['A', 'B1', 'B2', 'C1', 'C2', 'DE'], default=['A', 'B1', 'B2', 'C1', 'C2'])
+
+                            # Aplicando os filtros
+                            if gender_filter != 'Todos':
+                                df_filtered = df[(df['age'].isin(age_filter)) & (df['gender'] == gender_filter)]
+                            else:
+                                df_filtered = df[(df['age'].isin(age_filter))]
+
+                            total_idades = df_filtered.uniques.sum()
+                            total_genero = df[~(df['gender'] == 'U') & (df['age'] != 'Unknown')].uniques.sum()
+                            total_generoidade = df[(df['gender'] != 'U') & (df['age'] != 'Unknown')].uniques.sum()
+
+                            # Calculando métricas de gênero, idade e classes
+                            final_genero = total_genero / total_generoidade
+                            final_idade = total_idades / total_generoidade
+
+                            # Classe social
+                            data_class = response['data']['uniques_by_social_class']['data']
+                            df_classe = pd.DataFrame(data_class)
+                            total_classes = df_classe[df_classe['social_class'].isin(['A', 'B1', 'B2', 'C1', 'C2', 'DE'])].uniques.sum()
+                            total_filtro_classes = df_classe[df_classe['social_class'].isin(class_filter)].uniques.sum()
+                            final_classes = total_filtro_classes / total_classes
+
+                            # Cálculo final
+                            comp = final_genero * final_idade * final_classes
+                            alcance_target = comp * alcance_geral
+                            impactos_target = comp * impactos
+
+                            # Exibir resultados finais
+                            st.subheader("Resultados Finais")
+                            st.write("Alcance Target:", alcance_target)
+                            st.write("Impactos Target:", impactos_target)
+
+                        except KeyError as e:
+                            st.error(f"Erro ao processar o JSON: {e}")
+
+                    except json.JSONDecodeError:
+                        st.error("O texto fornecido não é um JSON válido.")
+
+            # Rodando o aplicativo Streamlit
+            if __name__ == "__main__":
+                main()
     except Exception as e:
         st.error(f"Ocorreu um erro ao processar o arquivo: {e}")
