@@ -508,7 +508,7 @@ if uploaded_file is not None:
                                 if st.checkbox("Selecionar todas as idades"):
                                     age_filter = todas_idades
                                 else:
-                                    age_filter = st.multiselect("Selecione as idades", options=todas_idades, default=['18-19', '20-29', '30-39', '40-49'])
+                                    age_filter = st.multiselect("Selecione as idades", options=todas_idades)
 
                                 # Filtro por gênero
                                 if st.checkbox("Selecionar todos os gêneros"):
@@ -522,7 +522,7 @@ if uploaded_file is not None:
                                 if st.checkbox("Selecionar todas as classes sociais"):
                                     class_filter = todas_classes
                                 else:
-                                    class_filter = st.multiselect("Selecione as classes sociais", options=todas_classes, default=['A', 'B1', 'B2', 'C1', 'C2'])
+                                    class_filter = st.multiselect("Selecione as classes sociais", options=todas_classes)
 
                                 # Aplicando os filtros
                                 if 'Todos' not in gender_filter:
