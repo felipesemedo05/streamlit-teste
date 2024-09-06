@@ -505,17 +505,17 @@ if uploaded_file is not None:
                                 st.subheader("Filtros")
                                 
                                 # Filtro por idade
-                                age_filter = st.multiselect("Selecione as idades", options=todas_idades, default=['18-19', '20-29', '30-39', '40-49'])
+                                age_filter = st.multiselect("Selecione as idades", options=todas_idades)
                                 if 'Todos' in age_filter:
                                     age_filter = todas_idades[1:]  # Exclui o 'Todos' da lista
 
                                 # Filtro por gênero
-                                gender_filter = st.multiselect("Selecione o gênero", options=todos_generos, default='F')
+                                gender_filter = st.multiselect("Selecione o gênero", options=todos_generos)
                                 if 'Todos' in gender_filter:
                                     gender_filter = todos_generos[1:]  # Exclui o 'Todos' da lista
 
                                 # Filtro por classe social
-                                class_filter = st.multiselect("Selecione as classes sociais", options=todas_classes, default=['A', 'B1', 'B2', 'C1', 'C2'])
+                                class_filter = st.multiselect("Selecione as classes sociais", options=todas_classes)
                                 if 'Todos' in class_filter:
                                     class_filter = todas_classes[1:]  # Exclui o 'Todos' da lista
 
