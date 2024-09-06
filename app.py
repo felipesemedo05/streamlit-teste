@@ -8,6 +8,7 @@ from datetime import datetime
 from io import BytesIO
 import openpyxl
 import matplotlib.pyplot as plt
+import json
 import seaborn as sns
 
 # Função para aplicar as transformações
