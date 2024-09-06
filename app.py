@@ -237,8 +237,7 @@ if uploaded_file is not None:
                                 (df['num_total_impressions'].isnull()) & 
                                 (df['home'].isnull()))]
 
-                total_por_genero = df_genero[(df_genero['gender_group'].isin(lista_genero)) & 
-                                            (df_genero['age_group'] != 0)].groupby('gender_group')['uniques'].sum().to_dict()
+                total_por_genero = df_genero[(df_genero['gender_group'].isin(lista_genero))].groupby('gender_group')['uniques'].sum().to_dict()
 
                 # Cálculo da porcentagem por gênero
                 porcentagem_por_genero = {genero: (total / total_alcance) * 100 
