@@ -461,73 +461,87 @@ if uploaded_file is not None:
         with tab6:
             # Função principal
             def main():
-                st.title("Processador de JSON para Impactos e Alcance")
+                st.title("Processador de Dicionário para Impactos e Alcance")
 
-                # Entrada de JSON
-                st.subheader("Cole o dicionário JSON:")
-                json_input = st.text_area("Cole aqui o JSON", height=300)
-                
-                # Verifica se o JSON foi fornecido
-                if json_input:
+                # Instruções
+                st.write("Insira o dicionário com os dados de `impressions`, `unique_devices`, `uniques_by_age_and_gender` e `uniques_by_social_class`.")
+
+                # Entrada de dicionário
+                st.subheader("Cole o dicionário Python:")
+                dict_input = st.text_area("Cole aqui o dicionário", height=300)
+
+                # Verifica se o dicionário foi fornecido
+                if dict_input:
                     try:
-                        response = json.loads(json_input)
+                        # Tenta converter a entrada para um dicionário Python
+                        response = eval(dict_input)
 
-                        # Extração de dados do JSON
-                        try:
-                            impactos = response['data']['impressions']['data'][0]['total_trips']
-                            alcance_geral = response['data']['unique_devices']['data'][0]['uniques']
-                            data = response['data']['uniques_by_age_and_gender']['data']
-                            df = pd.DataFrame(data)
+                        # Validação básica do dicionário
+                        if 'data' not in response or \
+                        'impressions' not in response['data'] or \
+                        'unique_devices' not in response['data'] or \
+                        'uniques_by_age_and_gender' not in response['data'] or \
+                        'uniques_by_social_class' not in response['data']:
+                            st.error("O dicionário fornecido não possui as chaves esperadas. Verifique a estrutura do dicionário.")
+                        else:
+                            # Extração de dados do dicionário
+                            try:
+                                impactos = response['data']['impressions']['data'][0]['total_trips']
+                                alcance_geral = response['data']['unique_devices']['data'][0]['uniques']
+                                data = response['data']['uniques_by_age_and_gender']['data']
+                                df = pd.DataFrame(data)
 
-                            # Exibir os dados extraídos
-                            st.subheader("Dados Extraídos:")
-                            st.write("Impactos:", impactos)
-                            st.write("Alcance Geral:", alcance_geral)
-                            st.dataframe(df)
+                                # Exibir os dados extraídos
+                                st.subheader("Dados Extraídos:")
+                                st.write("Impactos:", impactos)
+                                st.write("Alcance Geral:", alcance_geral)
+                                st.dataframe(df)
 
-                            # Filtros dinâmicos
-                            st.subheader("Filtros")
-                            age_filter = st.multiselect("Selecione as idades", options=['18-19', '20-29', '30-39', '40-49', '50-59', '60-69', '70-79', '80+'], default=['18-19', '20-29', '30-39', '40-49'])
-                            gender_filter = st.selectbox("Selecione o gênero", options=['F', 'M', 'Todos'])
-                            class_filter = st.multiselect("Selecione as classes sociais", options=['A', 'B1', 'B2', 'C1', 'C2', 'DE'], default=['A', 'B1', 'B2', 'C1', 'C2'])
+                                # Filtros dinâmicos
+                                st.subheader("Filtros")
+                                age_filter = st.multiselect("Selecione as idades", options=['18-19', '20-29', '30-39', '40-49', '50-59', '60-69', '70-79', '80+'], default=['18-19', '20-29', '30-39', '40-49'])
+                                gender_filter = st.selectbox("Selecione o gênero", options=['F', 'M', 'Todos'])
+                                class_filter = st.multiselect("Selecione as classes sociais", options=['A', 'B1', 'B2', 'C1', 'C2', 'DE'], default=['A', 'B1', 'B2', 'C1', 'C2'])
 
-                            # Aplicando os filtros
-                            if gender_filter != 'Todos':
-                                df_filtered = df[(df['age'].isin(age_filter)) & (df['gender'] == gender_filter)]
-                            else:
-                                df_filtered = df[(df['age'].isin(age_filter))]
+                                # Aplicando os filtros
+                                if gender_filter != 'Todos':
+                                    df_filtered = df[(df['age'].isin(age_filter)) & (df['gender'] == gender_filter)]
+                                else:
+                                    df_filtered = df[(df['age'].isin(age_filter))]
 
-                            total_idades = df_filtered.uniques.sum()
-                            total_genero = df[~(df['gender'] == 'U') & (df['age'] != 'Unknown')].uniques.sum()
-                            total_generoidade = df[(df['gender'] != 'U') & (df['age'] != 'Unknown')].uniques.sum()
+                                total_idades = df_filtered.uniques.sum()
+                                total_genero = df[~(df['gender'] == 'U') & (df['age'] != 'Unknown')].uniques.sum()
+                                total_generoidade = df[(df['gender'] != 'U') & (df['age'] != 'Unknown')].uniques.sum()
 
-                            # Calculando métricas de gênero, idade e classes
-                            final_genero = total_genero / total_generoidade
-                            final_idade = total_idades / total_generoidade
+                                # Calculando métricas de gênero, idade e classes
+                                final_genero = total_genero / total_generoidade
+                                final_idade = total_idades / total_generoidade
 
-                            # Classe social
-                            data_class = response['data']['uniques_by_social_class']['data']
-                            df_classe = pd.DataFrame(data_class)
-                            total_classes = df_classe[df_classe['social_class'].isin(['A', 'B1', 'B2', 'C1', 'C2', 'DE'])].uniques.sum()
-                            total_filtro_classes = df_classe[df_classe['social_class'].isin(class_filter)].uniques.sum()
-                            final_classes = total_filtro_classes / total_classes
+                                # Classe social
+                                data_class = response['data']['uniques_by_social_class']['data']
+                                df_classe = pd.DataFrame(data_class)
+                                total_classes = df_classe[df_classe['social_class'].isin(['A', 'B1', 'B2', 'C1', 'C2', 'DE'])].uniques.sum()
+                                total_filtro_classes = df_classe[df_classe['social_class'].isin(class_filter)].uniques.sum()
+                                final_classes = total_filtro_classes / total_classes
 
-                            # Cálculo final
-                            comp = final_genero * final_idade * final_classes
-                            alcance_target = comp * alcance_geral
-                            impactos_target = comp * impactos
+                                # Cálculo final
+                                comp = final_genero * final_idade * final_classes
+                                alcance_target = comp * alcance_geral
+                                impactos_target = comp * impactos
 
-                            # Exibir resultados finais
-                            st.subheader("Resultados Finais")
-                            st.write("Alcance Target:", alcance_target)
-                            st.write("Impactos Target:", impactos_target)
+                                # Exibir resultados finais
+                                st.subheader("Resultados Finais")
+                                st.write("Alcance Target:", alcance_target)
+                                st.write("Impactos Target:", impactos_target)
 
-                        except KeyError as e:
-                            st.error(f"Erro ao processar o JSON: {e}")
+                            except KeyError as e:
+                                st.error(f"Erro ao processar o dicionário: chave ausente {e}")
 
-                    except json.JSONDecodeError:
-                        st.error("O texto fornecido não é um JSON válido.")
-
+                    except SyntaxError:
+                        st.error("O texto fornecido não é um dicionário Python válido. Verifique a formatação.")
+                    except Exception as e:
+                        st.error(f"Erro inesperado: {e}")
+                        
             # Rodando o aplicativo Streamlit
             if __name__ == "__main__":
                 main()
