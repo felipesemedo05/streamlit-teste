@@ -458,111 +458,111 @@ if uploaded_file is not None:
                                     height=400, width=800)  # Ajusta o tamanho do gráfico
 
             st.plotly_chart(fig_combined, use_container_width=True)
-        with tab6:
-            # Função principal
-            def main():
-                st.title("Processador de Dicionário para Impactos e Alcance")
+        # with tab6:
+        #     # Função principal
+        #     def main():
+        #         st.title("Processador de Dicionário para Impactos e Alcance")
 
-                # Instruções
-                st.write("Insira o dicionário com os dados de `impressions`, `unique_devices`, `uniques_by_age_and_gender` e `uniques_by_social_class`.")
+        #         # Instruções
+        #         st.write("Insira o dicionário com os dados de `impressions`, `unique_devices`, `uniques_by_age_and_gender` e `uniques_by_social_class`.")
 
-                # Entrada de dicionário
-                st.subheader("Cole o dicionário Python:")
-                dict_input = st.text_area("Cole aqui o dicionário", height=150)
+        #         # Entrada de dicionário
+        #         st.subheader("Cole o dicionário Python:")
+        #         dict_input = st.text_area("Cole aqui o dicionário", height=150)
 
-                # Verifica se o dicionário foi fornecido
-                if dict_input:
-                    try:
-                        # Tenta converter a entrada para um dicionário Python
-                        response = eval(dict_input)
+        #         # Verifica se o dicionário foi fornecido
+        #         if dict_input:
+        #             try:
+        #                 # Tenta converter a entrada para um dicionário Python
+        #                 response = eval(dict_input)
 
-                        # Validação básica do dicionário
-                        if 'data' not in response or \
-                        'impressions' not in response['data'] or \
-                        'unique_devices' not in response['data'] or \
-                        'uniques_by_age_and_gender' not in response['data'] or \
-                        'uniques_by_social_class' not in response['data']:
-                            st.error("O dicionário fornecido não possui as chaves esperadas. Verifique a estrutura do dicionário.")
-                        else:
-                            # Extração de dados do dicionário
-                            try:
-                                impactos = response['data']['impressions']['data'][0]['total_trips']
-                                alcance_geral = response['data']['unique_devices']['data'][0]['uniques']
-                                data = response['data']['uniques_by_age_and_gender']['data']
-                                df = pd.DataFrame(data)
+        #                 # Validação básica do dicionário
+        #                 if 'data' not in response or \
+        #                 'impressions' not in response['data'] or \
+        #                 'unique_devices' not in response['data'] or \
+        #                 'uniques_by_age_and_gender' not in response['data'] or \
+        #                 'uniques_by_social_class' not in response['data']:
+        #                     st.error("O dicionário fornecido não possui as chaves esperadas. Verifique a estrutura do dicionário.")
+        #                 else:
+        #                     # Extração de dados do dicionário
+        #                     try:
+        #                         impactos = response['data']['impressions']['data'][0]['total_trips']
+        #                         alcance_geral = response['data']['unique_devices']['data'][0]['uniques']
+        #                         data = response['data']['uniques_by_age_and_gender']['data']
+        #                         df = pd.DataFrame(data)
 
-                                # Exibir os dados extraídos
-                                st.subheader("Dados Extraídos:")
-                                st.write(f"Impactos: {round(impactos)}")
-                                st.write(f"Alcance Geral: {round(alcance_geral)}")
+        #                         # Exibir os dados extraídos
+        #                         st.subheader("Dados Extraídos:")
+        #                         st.write(f"Impactos: {round(impactos)}")
+        #                         st.write(f"Alcance Geral: {round(alcance_geral)}")
 
-                                # Opções de filtros
-                                todas_idades = ['Todos', '18-19', '20-29', '30-39', '40-49', '50-59', '60-69', '70-79', '80+']
-                                todos_generos = ['AS', 'F', 'M']
-                                todas_classes = ['A', 'B1', 'B2', 'C1', 'C2', 'DE']
+        #                         # Opções de filtros
+        #                         todas_idades = ['Todos', '18-19', '20-29', '30-39', '40-49', '50-59', '60-69', '70-79', '80+']
+        #                         todos_generos = ['AS', 'F', 'M']
+        #                         todas_classes = ['A', 'B1', 'B2', 'C1', 'C2', 'DE']
 
-                                # Filtros dinâmicos com a opção de "Selecionar Todos"
-                                st.subheader("Filtros")
+        #                         # Filtros dinâmicos com a opção de "Selecionar Todos"
+        #                         st.subheader("Filtros")
                                 
-                                # Filtro por idade
-                                age_filter = st.multiselect("Selecione as idades", options=todas_idades)
-                                if 'Todos' in age_filter:
-                                    age_filter = todas_idades[1:]  # Exclui o 'Todos' da lista
+        #                         # Filtro por idade
+        #                         age_filter = st.multiselect("Selecione as idades", options=todas_idades)
+        #                         if 'Todos' in age_filter:
+        #                             age_filter = todas_idades[1:]  # Exclui o 'Todos' da lista
 
-                                # Filtro por gênero
-                                gender_filter = st.multiselect("Selecione o gênero", options=todos_generos)
-                                if 'AS' in gender_filter:
-                                    gender_filter = todos_generos[1:]  # Exclui o 'Todos' da lista
+        #                         # Filtro por gênero
+        #                         gender_filter = st.multiselect("Selecione o gênero", options=todos_generos)
+        #                         if 'AS' in gender_filter:
+        #                             gender_filter = todos_generos[1:]  # Exclui o 'Todos' da lista
 
-                                # Filtro por classe social
-                                class_filter = st.multiselect("Selecione as classes sociais", options=todas_classes)
-                                if 'Todos' in class_filter:
-                                    class_filter = todas_classes[1:]  # Exclui o 'Todos' da lista
+        #                         # Filtro por classe social
+        #                         class_filter = st.multiselect("Selecione as classes sociais", options=todas_classes)
+        #                         if 'Todos' in class_filter:
+        #                             class_filter = todas_classes[1:]  # Exclui o 'Todos' da lista
 
-                                # Aplicando os filtros
-                                df_filtered = df[(df['age'].isin(age_filter)) & (df['gender'].isin(gender_filter))]
+        #                         # Aplicando os filtros
+        #                         df_filtered = df[(df['age'].isin(age_filter)) & (df['gender'].isin(gender_filter))]
 
-                                total_idades = df_filtered.uniques.sum()
-                                total_genero = df[~(df['gender'] == 'U') & (df['age'] != 'Unknown')].uniques.sum()
-                                total_generoidade = df[(df['gender'] != 'U') & (df['age'] != 'Unknown')].uniques.sum()
+        #                         total_idades = df_filtered.uniques.sum()
+        #                         total_genero = df[~(df['gender'] == 'U') & (df['age'] != 'Unknown')].uniques.sum()
+        #                         total_generoidade = df[(df['gender'] != 'U') & (df['age'] != 'Unknown')].uniques.sum()
 
-                                # Calculando métricas de gênero, idade e classes
-                                final_genero = total_genero / total_generoidade
-                                final_idade = total_idades / total_generoidade
+        #                         # Calculando métricas de gênero, idade e classes
+        #                         final_genero = total_genero / total_generoidade
+        #                         final_idade = total_idades / total_generoidade
 
-                                # Classe social
-                                data_class = response['data']['uniques_by_social_class']['data']
-                                df_classe = pd.DataFrame(data_class)
-                                total_classes = df_classe[df_classe['social_class'].isin(todas_classes[1:])].uniques.sum()  # Exclui 'Todos'
-                                total_filtro_classes = df_classe[df_classe['social_class'].isin(class_filter)].uniques.sum()
-                                final_classes = total_filtro_classes / total_classes
+        #                         # Classe social
+        #                         data_class = response['data']['uniques_by_social_class']['data']
+        #                         df_classe = pd.DataFrame(data_class)
+        #                         total_classes = df_classe[df_classe['social_class'].isin(todas_classes[1:])].uniques.sum()  # Exclui 'Todos'
+        #                         total_filtro_classes = df_classe[df_classe['social_class'].isin(class_filter)].uniques.sum()
+        #                         final_classes = total_filtro_classes / total_classes
 
-                                # Cálculo final
-                                comp = final_genero * final_idade * final_classes
-                                alcance_target = comp * alcance_geral
-                                impactos_target = comp * impactos
+        #                         # Cálculo final
+        #                         comp = final_genero * final_idade * final_classes
+        #                         alcance_target = comp * alcance_geral
+        #                         impactos_target = comp * impactos
 
-                                # Cálculo final
-                                comp = final_genero * final_idade * final_classes
-                                alcance_target = comp * alcance_geral
-                                impactos_target = comp * impactos
+        #                         # Cálculo final
+        #                         comp = final_genero * final_idade * final_classes
+        #                         alcance_target = comp * alcance_geral
+        #                         impactos_target = comp * impactos
 
-                                # Exibir resultados finais
-                                st.subheader("Resultados Finais")
-                                st.write(f"Composicao: {round(comp, 2)}")
-                                st.write(f"Alcance Target: {round(alcance_target)}")
-                                st.write(f"Impactos Target: {round(impactos_target)}")
+        #                         # Exibir resultados finais
+        #                         st.subheader("Resultados Finais")
+        #                         st.write(f"Composicao: {round(comp, 2)}")
+        #                         st.write(f"Alcance Target: {round(alcance_target)}")
+        #                         st.write(f"Impactos Target: {round(impactos_target)}")
 
-                            except KeyError as e:
-                                st.error(f"Erro ao processar o dicionário: chave ausente {e}")
+        #                     except KeyError as e:
+        #                         st.error(f"Erro ao processar o dicionário: chave ausente {e}")
 
-                    except SyntaxError:
-                        st.error("O texto fornecido não é um dicionário Python válido. Verifique a formatação.")
-                    except Exception as e:
-                        st.error(f"Erro inesperado: {e}")
+        #             except SyntaxError:
+        #                 st.error("O texto fornecido não é um dicionário Python válido. Verifique a formatação.")
+        #             except Exception as e:
+        #                 st.error(f"Erro inesperado: {e}")
                         
-            # Rodando o aplicativo Streamlit
-            if __name__ == "__main__":
-                main()
+        #     # Rodando o aplicativo Streamlit
+        #     if __name__ == "__main__":
+        #         main()
     except Exception as e:
         st.error(f"Ocorreu um erro ao processar o arquivo: {e}")
