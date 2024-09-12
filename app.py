@@ -89,13 +89,13 @@ if uploaded_file is not None:
 
         # Leitura do arquivo claro diretamente do computador
         claro_path = 'claro.csv'  # Atualize com o caminho do seu arquivo
-        claro = pd.read_csv(claro_path, encoding='latin-1')
+        claro = pd.read_csv(claro_path, encoding='latin-1', low_memory=False)
 
         # Leitura do arquivo CSV ou Parquet do dataset principal
         if uploaded_file.name.endswith('.csv'):
-            df = pd.read_csv(uploaded_file, encoding='latin-1')
+            df = pd.read_csv(uploaded_file, encoding='latin-1', low_memory=False)
         elif uploaded_file.name.endswith('.parquet'):
-            df = pd.read_parquet(uploaded_file)
+            df = pd.read_parquet(uploaded_file, low_memory=False)
         
         # Exibindo o período das datas, se as colunas existirem
         if 'start_date' in df.columns and 'end_date' in df.columns:
@@ -122,7 +122,7 @@ if uploaded_file is not None:
         # Criar uma lista das colunas preenchidas (não vazias)
         colunas_preenchidas = final.columns.tolist()
 
-        #colunas_padrao = ['location_id', 'impressions', 'uniques']
+        colunas_padrao = ['location_id', 'impressions', 'uniques']
 
         # Abas para Navegação
         tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs(["Ponto a Ponto", 
@@ -137,7 +137,8 @@ if uploaded_file is not None:
             st.write("Seleção de Colunas para Download:")
             colunas_selecionadas = st.multiselect(
                 "Escolha as colunas que deseja incluir no download:",
-                options=colunas_preenchidas
+                options=colunas_preenchidas,
+                default=colunas_padrao
             )
 
             # Filtrar o DataFrame com base nas colunas selecionadas
