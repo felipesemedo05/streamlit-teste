@@ -569,7 +569,7 @@ if uploaded_file is not None:
         with tab7:
             # Gerar o mapa no Kepler.gl
             mapa = KeplerGl()
-            mapa.add_data(data=df, name="Cidades Brasileiras")
+            mapa.add_data(data=final, name="Cidades Brasileiras")
 
             # Salvar o mapa em um arquivo HTML
             html_file = 'mapa_kepler.html'
