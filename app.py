@@ -126,12 +126,13 @@ if uploaded_file is not None:
         colunas_padrao = ['location_id', 'impressions', 'uniques']
 
         # Abas para Navegação
-        tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs(["Ponto a Ponto", 
+        tab1, tab2, tab3, tab4, tab5, tab6, tab7 = st.tabs(["Ponto a Ponto", 
                                                     "Estatísticas Descritivas",
                                                     "Visualização Mapa",
                                                     "Métricas por Data",
                                                     "Gráficos",
-                                                    "Tratamento JSON"])
+                                                    "Tratamento JSON",
+                                                    "KeplerGL"])
 
         with tab1:
             st.header("Ponto a Ponto")
