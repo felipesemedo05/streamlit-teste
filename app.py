@@ -576,17 +576,14 @@ if uploaded_file is not None:
             html_file = 'mapa_kepler.html'
             mapa.save_to_html(file_name=html_file)
 
-            # Exibir um botão para abrir o mapa em uma nova aba do navegador
+            # Exibir um link clicável para abrir o mapa no navegador
             st.title("Mapa Interativo com Kepler.gl")
-            st.write("Clique no botão abaixo para abrir o mapa em uma nova aba:")
+            st.write("Clique no link abaixo para abrir o mapa interativo em uma nova aba:")
 
-            # Função para abrir o arquivo HTML em uma nova aba
-            def open_map_in_browser(file_path):
-                abs_path = os.path.abspath(file_path)
-                webbrowser.open_new(f"file://{abs_path}")
+            # Obter o caminho absoluto do arquivo HTML
+            html_path = os.path.abspath(html_file)
 
-            # Botão para abrir o mapa
-            if st.button('Abrir Mapa'):
-                open_map_in_browser(html_file)
+            # Criar um link clicável para abrir o arquivo localmente
+            st.markdown(f'<a href="file://{html_path}" target="_blank">Abrir Mapa Kepler.gl</a>', unsafe_allow_html=True)
     except Exception as e:
         st.error(f"Ocorreu um erro ao processar o arquivo: {e}")
