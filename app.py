@@ -582,7 +582,7 @@ if uploaded_file is not None:
 
             # Criar um link clicável no Streamlit
             if os.path.exists(html_file):
-                st.markdown(f'[Abrir Mapa Kepler.gl]({map_url})', unsafe_allow_html=True)
+                st.markdown(f'html_file')
             else:
                 st.error("Erro: O arquivo do mapa não foi encontrado.")
     except Exception as e:
