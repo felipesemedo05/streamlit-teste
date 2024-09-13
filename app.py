@@ -567,7 +567,6 @@ if uploaded_file is not None:
             if __name__ == "__main__":
                 main()
         with tab7:
-            # Gerar o mapa no Kepler.gl
             mapa = KeplerGl()
             mapa.add_data(data=final, name="Cidades Brasileiras")
 
@@ -575,15 +574,8 @@ if uploaded_file is not None:
             html_file = 'mapa_kepler.html'
             mapa.save_to_html(file_name=html_file)
 
-            # Exibir um link clicável para abrir o mapa
+            # Exibir um link para download do mapa
             st.title("Mapa Interativo com Kepler.gl")
-            st.write("Clique no link abaixo para abrir o mapa interativo gerado com Kepler.gl:")
-            map_url = f"./{html_file}"
-
-            # Criar um link clicável no Streamlit
-            if os.path.exists(html_file):
-                st.markdown(f'[Abrir Mapa Kepler.gl]({map_url})', unsafe_allow_html=True)
-            else:
-                st.error("Erro: O arquivo do mapa não foi encontrado.")
+            st.write("Clique no botão abaixo para baixar o mapa gerado:")
     except Exception as e:
         st.error(f"Ocorreu um erro ao processar o arquivo: {e}")
