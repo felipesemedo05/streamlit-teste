@@ -2,7 +2,6 @@ openpyxl
 folium
 streamlit_folium
 pydeck
-KeplerGl
 matplotlib
 seaborn
 plotly
