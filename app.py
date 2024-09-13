@@ -9,6 +9,7 @@ from io import BytesIO
 import openpyxl
 import matplotlib.pyplot as plt
 import json
+import webbrowser
 from keplergl import KeplerGl
 import seaborn as sns
 
@@ -567,6 +568,7 @@ if uploaded_file is not None:
             if __name__ == "__main__":
                 main()
         with tab7:
+            # Gerar o mapa no Kepler.gl
             mapa = KeplerGl()
             mapa.add_data(data=final, name="Cidades Brasileiras")
 
@@ -574,8 +576,17 @@ if uploaded_file is not None:
             html_file = 'mapa_kepler.html'
             mapa.save_to_html(file_name=html_file)
 
-            # Exibir um link para download do mapa
+            # Exibir um botão para abrir o mapa em uma nova aba do navegador
             st.title("Mapa Interativo com Kepler.gl")
-            st.write("Clique no botão abaixo para baixar o mapa gerado:")
+            st.write("Clique no botão abaixo para abrir o mapa em uma nova aba:")
+
+            # Função para abrir o arquivo HTML em uma nova aba
+            def open_map_in_browser(file_path):
+                abs_path = os.path.abspath(file_path)
+                webbrowser.open_new(f"file://{abs_path}")
+
+            # Botão para abrir o mapa
+            if st.button('Abrir Mapa'):
+                open_map_in_browser(html_file)
     except Exception as e:
         st.error(f"Ocorreu um erro ao processar o arquivo: {e}")
