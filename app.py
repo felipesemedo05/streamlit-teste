@@ -9,8 +9,6 @@ from io import BytesIO
 import openpyxl
 import matplotlib.pyplot as plt
 import json
-# from keplergl import KeplerGl
-import webbrowser
 import seaborn as sns
 
 # Função para aplicar as transformações
