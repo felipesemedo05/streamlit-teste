@@ -583,10 +583,6 @@ if uploaded_file is not None:
                 # Exibir o iframe com o mapa
                 st.components.v1.html(html_code, height=600)
 
-            # Mostrar o DataFrame
-            st.subheader("Dados:")
-            st.write(final)
-
             # Criar e exibir o mapa
             if st.button('Gerar Mapa'):
                 st.subheader("Mapa Interativo:")
