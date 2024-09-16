@@ -11,6 +11,7 @@ import matplotlib.pyplot as plt
 import json
 import seaborn as sns
 from keplergl import KeplerGl
+import os
 import webbrowser
 
 # Função para aplicar as transformações
@@ -568,25 +569,38 @@ if uploaded_file is not None:
             if __name__ == "__main__":
                 main()
         with tab7:
-            # Gerar o mapa no Kepler.gl
-            mapa = KeplerGl()
-            mapa.add_data(data=final, name="Cidades Brasileiras")
+                        # Função para gerar o mapa com Kepler.gl
+            def gerar_mapa():
+                # Inicialize o mapa
+                mapa = KeplerGl(height=400)
+                
+                # Adicione o dataset ao mapa
+                mapa.add_data(data=final, name="Cidades Brasileiras")
 
-            # Salvar o mapa em um arquivo HTML
-            html_file = 'mapa_kepler.html'
-            mapa.save_to_html(file_name=html_file)
+                return mapa
 
-            # Exibir um botão para abrir o mapa em uma nova aba do navegador
-            st.title("Mapa Interativo com Kepler.gl")
-            st.write("Clique no botão abaixo para abrir o mapa em uma nova aba:")
+            # Função para exportar o mapa como HTML em um arquivo temporário
+            def exportar_mapa_temp(mapa, file_name="meu_mapa_temp.html"):
+                # Salva o mapa temporariamente
+                temp_file_path = os.path.join(os.getcwd(), file_name)
+                mapa.save_to_html(file_name=temp_file_path)
+                return temp_file_path
 
-            # Função para abrir o arquivo HTML em uma nova aba
-            def open_map_in_browser(file_path):
-                abs_path = os.path.abspath(file_path)
-                webbrowser.open_new(f"file://{abs_path}")
+            # Título do app
+            st.title("Mapa Interativo com Kepler.gl no Streamlit")
 
-            # Botão para abrir o mapa
-            if st.button('Abrir Mapa'):
-                open_map_in_browser(html_file)
+            # Botão para gerar o mapa
+            if st.button("Gerar Mapa"):
+                # Gerar o mapa
+                mapa = gerar_mapa()
+                
+                # Exportar o mapa como HTML temporário
+                temp_html_path = exportar_mapa_temp(mapa)
+                
+                # Gerar um link para abrir o mapa em uma nova aba
+                st.markdown(f'[Abrir Mapa em Nova Aba](./{temp_html_path})', unsafe_allow_html=True)
+
+                # Dica para abrir o link em nova aba
+                st.write("Clique no link acima para abrir o mapa em uma nova aba.")
     except Exception as e:
         st.error(f"Ocorreu um erro ao processar o arquivo: {e}")
