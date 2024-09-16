@@ -8,5 +8,3 @@ plotly
 statsmodels
 regex
 keplergl
-webbrowser
-os

@@ -11,7 +11,6 @@ import json
 import seaborn as sns
 from keplergl import KeplerGl
 import os
-import webbrowser
 
 # Função para aplicar as transformações
 
