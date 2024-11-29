@@ -56,10 +56,9 @@ def processar_arquivo(df, claro):
     df1['location_id'] = df1['location_id'].astype(str)
 
     # Aplica a função na coluna 'location_id'
-    # df1['location_id'] = df1['location_id'].apply(process_location_id)
 
     final = df1.merge(claro, on='location_id')
-
+    final['location_id'] = final['location_id'].apply(process_location_id)
     # Excluir colunas totalmente vazias
     final = final.dropna(axis=1, how='all')
 
